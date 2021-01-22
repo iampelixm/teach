@@ -13,6 +13,7 @@ class CreateCourseModulesTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('course_modules');
         Schema::create('course_modules', function (Blueprint $table) {
             $table->id('module_id');
             $table->foreignId('course_id')->references('course_id')->on('courses');

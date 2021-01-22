@@ -10,10 +10,10 @@ class ModuleLesson extends Model
     use HasFactory;
 
     public $timestamps = false;
-    protected $publicKey = 'lesson_id';
+    protected $primaryKey = 'lesson_id';
 
     public function module()
     {
-        return $this->belongsTo('App\CourseModule');
+        return $this->belongsTo(CourseModule::class, 'module_id', 'module_id');
     }
 }

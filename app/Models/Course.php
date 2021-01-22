@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
     protected $primaryKey = 'course_id';
 
     public function modules()
     {
-        return $this->hasMany('App\CourseModules');
+        return $this->hasMany(CourseModule::class, 'course_id', 'course_id');
     }
 }

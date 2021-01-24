@@ -13,8 +13,8 @@ class WebController extends Controller
 
     public const nav = [
         [
-            'link' => '/',
-            'caption' => 'Курсы'
+            //'link' => '/',
+            //'caption' => 'Курсы'
         ]
     ];
 
@@ -22,7 +22,7 @@ class WebController extends Controller
     {
         return [
             'nav' => $this::nav,
-            'page_title' => 'Портал обучения :: админ'
+            'page_title' => 'SeVe Realty Teach'
         ];
     }
 

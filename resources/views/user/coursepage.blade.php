@@ -3,10 +3,24 @@
 @section('content')
 <main>
     <div class="container">
-        <h1 class="title text-center">Курс {{$course->course_caption}}</h1>
-        <p>{!!$course->course_presc!!}</p>
-        <h2 class="title text-center mt-3">Модули курса</h2>
+        <a href="/">Курсы</a> / 
+        {{$course->course_caption}}     
+        <h1 class="title text-center mb-4">{{$course->course_caption}}</h1>
+        <p style="font-size: 1.2rem">{!!$course->course_presc!!}</p>
+        <h2 class="title text-center mt-3 d-none">Модули курса</h2>
+        <div class="row">
         @if(!collect($course->modules)->isEmpty())
+        @foreach($course->modules as $module)
+        @component('component.card', 
+            [
+                'title'=>$module->module_caption,
+                'body'=>$module->module_presc,
+                'link'=>'/module/'.$module->module_id,
+                'class'=>'col-lg-3 p-0 m-2'
+            ])
+        @endcomponent
+        @endforeach
+        {{--}}        
             @component('component.table', 
                 [
                     'items'=>$course->modules,
@@ -14,12 +28,14 @@
                     'link'=>'/module/',
                     'link_item_key'=>'module_id'
                 ])
-            @endcomponent        
+            @endcomponent
+        --}}                    
         @else
             @component('component.alert', ['type'=>'warning'])
                 Еще не созданы модули
             @endcomponent
         @endif
+        </div>
 
     </div>
 </main>

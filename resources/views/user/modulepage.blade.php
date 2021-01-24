@@ -4,12 +4,13 @@
 <main>
     <div class="container">
         <a href="/">Курсы</a> / 
-        <a href="/course/{{$coursemodule->course->course_id}}">{{$coursemodule->course->course_caption}}</a>        
+        <a href="/course/{{$coursemodule->course->course_id}}">{{$coursemodule->course->course_caption}}</a> /
+        {{$coursemodule->module_caption}}       
         <h1 class="title text-center">
-            Модуль {{$coursemodule->module_caption}}
+            {{$coursemodule->module_caption}}
         </h1>
         <p>{{$coursemodule->module_presc}}</p>
-        <h2 class="title text-center mt-3">Уроки модуля</h2>
+        <h2 class="title text-center mt-3 d-none">Уроки модуля</h2>
         @if(!collect($coursemodule->lessons)->isEmpty())
             @component('component.table', 
                 [

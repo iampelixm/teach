@@ -47,12 +47,6 @@ if(!isset($nav_class)) $nav_class='navbar-light bg-light';
 //navbar id
 if(!isset($nav_id)) $nav_id='mainNavbar';
 
-if(!isset($hide_root)) $hide_root=0;
-if($hide_root)
-{
-    unset($items['/']);
-}
-
 if(!isset($logo_width) && !isset($logo_height))
 {
     $logo_width='30px';
@@ -72,12 +66,14 @@ if(!isset($logo_width) && isset($logo_height))
 
 if(!isset($id)) $id='nav';
 @endphp
-<nav id="nav" class="navbar navbar-expand-lg {{$nav_class}}">
+
+<nav id="{{$id}}" class="navbar navbar-expand-lg {{$nav_class}}">
     @if($show_brand)
     <a class="navbar-brand" href="/">
         @if($brand_logo)
-        <img src="{{$brand_logo}}" style="{{$logo_height}} {{$logo_width}}" class="d-inline-block align-left mr-2" alt="{{$brand}}">    
+        <img src="{{$brand_logo}}" style="height:{{$logo_height}}; width:{{$logo_width}};" class="d-inline-block align-left mr-2" alt="{{$brand}}">    
         @endif
+        {{$brand}}
     </a>
     @endif
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#{{$nav_id}}" aria-controls="{{$nav_id}}"

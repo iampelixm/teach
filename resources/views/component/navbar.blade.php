@@ -73,14 +73,46 @@ if(!isset($id)) $id='nav';
         @if($brand_logo)
         <img src="{{$brand_logo}}" style="height:{{$logo_height}}; width:{{$logo_width}};" class="d-inline-block align-left mr-2" alt="{{$brand}}">    
         @endif
-        {{$brand}}
+
+        @if(isset($brand_xs) && !empty($brand_xs))
+            <span class="d-sm-none d-inline">
+            {{$brand_xs}}
+            </span>        
+        @endif   
+
+        @if(isset($brand_sm) && !empty($brand_sm))
+            <span class="d-none d-sm-inline d-md-none">
+            {{$brand_sm}}
+            </span>        
+        @endif  
+
+        @if(isset($brand_md) && !empty($brand_md))
+            <span class="d-none d-md-inline d-lg-none">
+            {{$brand_md}}
+            </span>        
+        @endif                    
+
+        @if(isset($brand_lg) && !empty($brand_lg))
+            <span class="d-none d-lg-inline d-xl-none" style="font-size: auto;">
+                {{$brand_lg}}
+            </span>        
+        @endif 
+
+        @if(isset($brand_xl) && !empty($brand_xl))
+            <span class="d-none d-xl-inline">
+            {{$brand_xl}}
+            </span>        
+        @endif         
     </a>
     @endif
+    @if(sizeof($items)>0)
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#{{$nav_id}}" aria-controls="{{$nav_id}}"
         aria-expanded="false" aria-label="Переключить меню">
         <span class="navbar-toggler-icon">       
         </span>
     </button>
+    @endif
+    
     <div class="collapse navbar-collapse" id="{{$nav_id}}">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             @component('component.navitem', ['items'=>$items])

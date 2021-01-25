@@ -12,10 +12,10 @@ class WebController extends Controller
 {
 
     public const nav = [
-        [
-            //'link' => '/',
-            //'caption' => 'Курсы'
-        ]
+        // [
+        //     'link' => '/',
+        //     'caption' => 'Курсы'
+        // ]
     ];
 
     public function getTemplateData()

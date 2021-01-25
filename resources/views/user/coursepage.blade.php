@@ -5,20 +5,22 @@
     <div class="container">
         <a href="/">Курсы</a> / 
         {{$course->course_caption}}     
-        <h1 class="title text-center mb-4">{{$course->course_caption}}</h1>
+        <h1 class="title text-center mt-2 mb-4">{{$course->course_caption}}</h1>
         <p style="font-size: 1.2rem">{!!$course->course_presc!!}</p>
         <h2 class="title text-center mt-3 d-none">Модули курса</h2>
         <div class="row">
         @if(!collect($course->modules)->isEmpty())
         @foreach($course->modules as $module)
+        <div class="col-lg-4 p-2">
         @component('component.card', 
             [
                 'title'=>$module->module_caption,
                 'body'=>$module->module_presc,
                 'link'=>'/module/'.$module->module_id,
-                'class'=>'col-lg-3 p-0 m-2'
+                'class'=>'p-0'
             ])
         @endcomponent
+        </div>
         @endforeach
         {{--}}        
             @component('component.table', 

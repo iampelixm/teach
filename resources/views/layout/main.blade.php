@@ -21,6 +21,8 @@
             [
                 'items'=>($nav ?? []),
                 'brand'=>'SeVen Realty Teach',
+                'brand_xs'=>'',
+                'brand_sm'=>'Realty Teach',
                 'brand_logo'=>'/file/get?file=logo.png',
                 'logo_height'=>'100px'
             ])

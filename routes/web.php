@@ -62,3 +62,7 @@ Route::get('/file/get', [FilesController::class, 'getFile']);
 Route::get('/file/download', [FilesController::class, 'downloadFile']);
 
 Route::get('/storage/{file_path}', [FilesController::class, 'storageWrapper']);
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

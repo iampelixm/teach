@@ -9,15 +9,61 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 use App\Models\User;
-use Bouncer;
+use Auth;
+//use Silber\Bouncer\Bouncer;
+use Silber\Bouncer\BouncerFacade as Bouncer;
+use Silber\Bouncer\Database\Role;
 
 class AdminController extends Controller
 {
 
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    public const permission_roles = [
+        [
+            'slug' => 'su',
+            'name' => 'su',
+            'title' => 'Суперпользователь',
+            'presc' => 'Может абсолютно все'
+        ],
+
+        [
+            'slug' => 'admin',
+            'name' => 'admin',
+            'title' => 'Администратор',
+            'presc' => 'Управление пользователями'
+        ],
+
+        [
+            'slug' => 'coursemanager',
+            'name' => 'coursemanager',
+            'title' => 'Менеджер курсов',
+            'presc' => 'Полное управление курсами'
+        ],
+
+        [
+            'slug' => 'teacher',
+            'name' => 'teacher',
+            'title' => 'Мастер (учитель)',
+            'presc' => 'Проверка заданий, открытие уроков'
+        ],
+
+        [
+            'slug' => 'student',
+            'name' => 'student',
+            'title' => 'Учащийся',
+            'presc' => 'Может смотреть курсы'
+        ],
+    ];
+
+    public const permission_abilities = [
+        [
+            'slug' => 'add-user',
+            'name' => 'add-user',
+            'title' => 'Управление пользователями',
+            'presc' => 'Может абсолютно все',
+            'on' => User::class
+        ],
+    ];
+
 
     public const nav = [
         [
@@ -34,14 +80,73 @@ class AdminController extends Controller
         ]
     ];
 
+    public function buildNav()
+    {
+        $nav = [];
+        $user = Auth::user();
+
+        if ($user->isAn('su', 'coursemanager, teacher')) {
+            array_push(
+                $nav[],
+                [
+                    'link' => '/admin/courses',
+                    'caption' => 'Курсы',
+                    'title' => 'Курсы'
+                ]
+            );
+        }
+
+
+        if ($user->isAn('su', 'coursemanager')) {
+            array_push(
+                $nav,
+                [
+                    'link' => '/admin/courses/new',
+                    'caption' => 'Добавить курс',
+                    'title' => 'Добавить курс'
+                ]
+            );
+        }
+
+        if ($user->isAn('su', 'admin')) {
+            array_push(
+                $nav,
+                [
+                    'link' => '#',
+                    'caption' => 'Пользователи',
+                    'title' => 'Пользователи',
+                    'childrens' => [
+                        [
+                            'link' => '/admin/user',
+                            'caption' => 'Пользователи',
+                            'title' => 'Пользователи',
+                        ],
+                        [
+                            'link' => '/admin/roles',
+                            'caption' => 'Роли',
+                            'title' => 'Роли',
+                        ]
+                    ]
+                ]
+            );
+        }
+
+
+        return $nav;
+    }
+
     public function getTemplateData()
     {
         return [
-            'nav' => $this::nav,
+            'nav' => $this->buildNav(),
             'page_title' => 'Портал обучения :: админ'
         ];
     }
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function index()
     {
@@ -94,9 +199,20 @@ class AdminController extends Controller
 
     public function pageUser(Request $request, $user_id)
     {
-        $template_data = $this->getTemplateData();
-        $template_data['page_title'] = 'Управление пользователем';
-        $template_data['user'] = User::find($user_id);
-        return view('admin.userPage', $template_data);
+        $current_user = Auth::user();
+        if ($current_user->isAn('su', 'admin')) {
+            Bouncer::allow('admin')->to('addUser', User::class);
+            //$current_user->allow('add-users', User::class);
+        }
+
+        if ($current_user->can('addUser', User::class)) {
+            $template_data = $this->getTemplateData();
+            $template_data['page_title'] = 'Управление пользователем';
+            $template_data['user'] = User::find($user_id);
+            $template_data['roles'] = Role::all();
+            return view('admin.userPage', $template_data);
+        } else {
+            abort(403);
+        }
     }
 }

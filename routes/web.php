@@ -26,6 +26,15 @@ Route::get('/', function () {
 
 Route::get('/admin', [AdminController::class, 'pageListCourses']);
 
+Route::get('/admin/user', [AdminController::class, 'pageUserList']);
+Route::get('/admin/user/{user_id}', [AdminController::class, 'pageUser']);
+Route::get('/admin/user/new', [AdminController::class, 'pageAddUser']);
+
+Route::post('/admin/user/add', [AdminController::class, 'pageAddUser']);
+Route::post('/admin/user/update', [AdminController::class, 'pageAddUser']);
+Route::post('/admin/user/disable', [AdminController::class, 'pageAddUser']);
+Route::post('/admin/user/delete', [AdminController::class, 'pageAddUser']);
+
 Route::get('/admin/courses', [AdminController::class, 'pageListCourses']);
 Route::get('/admin/courses/new', [AdminController::class, 'pageNewCourse']);
 Route::get('/admin/courses/{course_id}', [AdminController::class, 'pageCourse']);

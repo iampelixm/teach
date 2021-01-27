@@ -8,8 +8,17 @@ use App\Models\ModuleLesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+use App\Models\User;
+use Bouncer;
+
 class AdminController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public const nav = [
         [
             'link' => '/admin',
@@ -73,5 +82,21 @@ class AdminController extends Controller
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
         $template_data['all_files'] = Storage::allFiles('lessons/' . $lesson_id);
         return view('admin.lessonpage', $template_data);
+    }
+
+    public function pageUserList()
+    {
+        $template_data = $this->getTemplateData();
+        $template_data['page_title'] = 'Управление пользователями';
+        $template_data['users'] = User::all();
+        return view('admin.users', $template_data);
+    }
+
+    public function pageUser(Request $request, $user_id)
+    {
+        $template_data = $this->getTemplateData();
+        $template_data['page_title'] = 'Управление пользователем';
+        $template_data['user'] = User::find($user_id);
+        return view('admin.userPage', $template_data);
     }
 }

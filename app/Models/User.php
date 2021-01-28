@@ -47,6 +47,12 @@ class User extends Authenticatable
         return $this->hasManyThrough(Course::class, CourseUser::class, 'user_id', 'course_id', 'id', 'course_id');
     }
 
+    public function hasCourseAccess($course_id)
+    {
+        return $this->hasManyThrough(Course::class, CourseUser::class, 'user_id', 'course_id', 'id', 'course_id')
+            ->where(['courses.course_id' => $course_id]);
+    }
+
     public function modules()
     {
         return $this->hasManyThrough(CourseModule::class, CourseModuleUser::class, 'user_id', 'module_id', 'id', 'module_id');

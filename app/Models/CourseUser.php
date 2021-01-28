@@ -11,4 +11,5 @@ class CourseUser extends Model
     use HasFactory, HasRolesAndAbilities;
 
     protected $table = 'course_users';
+    protected $fillable = ['user_id', 'course_id'];
 }

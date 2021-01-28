@@ -25,6 +25,7 @@ class CourseController extends Controller
         $modelCourse = new Course;
         $modelCourse->course_caption = $request->input('course_caption');
         $modelCourse->course_presc = $request->input('course_presc');
+        $modelCourse->is_access_listed = $request->input('is_access_listed') || 0;
         if (!$modelCourse->save()) {
             return back()->withInput();
         }
@@ -49,6 +50,7 @@ class CourseController extends Controller
         }
         $modelCourse->course_caption = $request->input('course_caption');
         $modelCourse->course_presc = $request->input('course_presc');
+        $modelCourse->is_access_listed = $request->input('is_access_listed') || 0;
         if (!$modelCourse->save()) {
             return back()->withInput();
         }

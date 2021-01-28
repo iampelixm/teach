@@ -15,5 +15,8 @@ if(empty($course->course_id))
     <x-form-input :bind="$course" type="hidden" name="course_id"/>
     <x-form-input :bind="$course" type="text" name="course_caption" label="Название курса"/>
     <x-form-textarea :bind="$course" name="course_presc" label="Описание курса"/>
+    <x-form-group>
+        <x-form-checkbox :bind="$course" name="is_access_listed" label="Контролировать доступ"/>
+    </x-form-group>
     <x-form-submit>{{$submit_caption}}</x-form-submit>
 </x-form>

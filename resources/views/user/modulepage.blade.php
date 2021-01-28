@@ -11,10 +11,10 @@
         </h1>
         <p>{{$coursemodule->module_presc}}</p>
         <h2 class="title text-center mt-2 mb-4 d-none">Уроки модуля</h2>
-        @if(!collect($coursemodule->lessons)->isEmpty())
+        @if(!collect($coursemodule->availableLessons)->isEmpty())
             @component('component.table', 
                 [
-                    'items'=>$coursemodule->lessons,
+                    'items'=>$coursemodule->availableLessons,
                     'captions'=>['lesson_caption'=>'Занятие', 'lesson_presc'=>'Описание'],
                     'link'=>'/lesson/',
                     'link_item_key'=>'lesson_id'

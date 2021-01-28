@@ -9,8 +9,9 @@
         <p style="font-size: 1.2rem">{!!$course->course_presc!!}</p>
         <h2 class="title text-center mt-3 d-none">Модули курса</h2>
         <div class="row">
-        @if(!collect($course->modules)->isEmpty())
-        @foreach($course->modules as $module)
+        @if(!collect($course->availableModules)->isEmpty())
+        
+        @foreach($course->availableModules as $module)
         <div class="col-lg-4 p-2">
         @component('component.card', 
             [

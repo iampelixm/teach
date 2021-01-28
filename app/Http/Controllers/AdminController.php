@@ -187,62 +187,17 @@ class AdminController extends Controller
     public function pageUser(Request $request, $user_id)
     {
         $current_user = BouncerFacade::create(Auth::user());
-        if ($current_user->can('manageUser', User::class)) {
-            //$us = new User;
-            //dd($us->courses()->toSql());
-            $template_data = $this->getTemplateData();
-            $template_data['page_title'] = 'Управление пользователем';
-            $template_data['user'] = User::find($user_id);
-            $template_data['roles'] = Role::all();
-            return view('admin.userPage', $template_data);
-        } else {
-            abort(403);
-        }
+        if (!$current_user->can('manageUser', User::class)) abort(403);
+
+        $template_data = $this->getTemplateData();
+        $template_data['page_title'] = 'Управление пользователем';
+        $template_data['user'] = User::find($user_id);
+        $template_data['roles'] = Role::all();
+        $template_data['courses'] = Course::where('is_access_listed', 1)->get();
+        return view('admin.userPage', $template_data);
     }
 
-    public function updateUser(Request $request)
-    {
-        $current_user = BouncerFacade::create(Auth::user());
 
-        if ($current_user->can('manageUser', User::class)) {
-            $user_id = $request->input('id');
-            $userModel = User::find($user_id);
-            if (!$userModel) abort(404);
-
-            $record_fields = array_keys($userModel->toArray());
-            foreach ($record_fields as $field) {
-                if (!empty($request->input($field))) {
-                    $userModel->update([$field => $request->input($field)]);
-                }
-            }
-
-            if (!empty($request->input('password'))) {
-
-                $userModel->password = Hash::make($request->newPassword);
-                $userModel->save();
-            }
-
-            if (!empty($request->input('roles'))) {
-                $allRoles = Role::all();
-                $recievedRoles = $request->input('roles');
-
-                foreach ($allRoles as $role) {
-                    if (in_array($role->name, $recievedRoles)) {
-                        $userModel->assign($role->name);
-                    } else {
-                        $userModel->retract($role->name);
-                    }
-                }
-            }
-
-            return redirect()->action(
-                [AdminController::class, 'pageUser'],
-                ['user_id' => $user_id]
-            );
-        } else {
-            abort(403);
-        }
-    }
 
     public function makeDefaultPermissions()
     {
@@ -340,13 +295,25 @@ class AdminController extends Controller
                 'presc' => 'Управление доступом учеников к курсам',
                 'on' => CourseUser::class
             ],
+            'viewCourses' => [
+                'slug' => 'viewCourses',
+                'name' => 'viewCourses',
+                'title' => 'Смотреть курсы',
+                'presc' => 'Основная роль для ученика',
+                'on' => null
+            ],
         ];
 
         $role_abilities = [];
 
         $role_abilities['su'] = array_keys($permission_abilities);
 
-        $role_abilities['admin'] = ['manageUser', 'manageUserRole'];
+        $role_abilities['admin'] =
+            [
+                'manageUser',
+                'manageUserRole',
+                'viewCourses'
+            ];
 
         $role_abilities['coursemanager'] =
             [
@@ -356,6 +323,7 @@ class AdminController extends Controller
                 'manageModuleLessonUserAccess',
                 'manageCourseModuleUserAccess',
                 'manageCourseUserAccess',
+                'viewCourses',
             ];
 
         $role_abilities['teacher'] =
@@ -363,6 +331,12 @@ class AdminController extends Controller
                 'manageModuleLessonUserAccess',
                 'manageCourseModuleUserAccess',
                 'manageCourseUserAccess',
+                'viewCourses',
+            ];
+
+        $role_abilities['student'] =
+            [
+                'viewCourses',
             ];
 
         $template_data = [];

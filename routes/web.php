@@ -5,9 +5,11 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseModuleController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\ModuleLessonController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserAccessController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,13 +34,15 @@ Route::get('/tech/buildPermissions', [AdminController::class, 'makeDefaultPermis
 
 
 Route::get('/admin/user', [AdminController::class, 'pageUserList']);
-Route::get('/admin/user/{user_id}', [AdminController::class, 'pageUser']);
 Route::get('/admin/user/new', [AdminController::class, 'pageAddUser']);
+Route::post('/admin/user/updateLessonAccess', [UserAccessController::class, 'updateLessonAccess']);
+Route::post('/admin/user/addLessonAccess', [UserAccessController::class, 'addLessonAccess']);
+Route::get('/admin/user/{user_id}', [AdminController::class, 'pageUser']);
 
-Route::post('/admin/user/add', [AdminController::class, 'pageAddUser']);
-Route::post('/admin/user/update', [AdminController::class, 'updateUser']);
-Route::post('/admin/user/disable', [AdminController::class, 'pageAddUser']);
-Route::post('/admin/user/delete', [AdminController::class, 'pageAddUser']);
+Route::post('/admin/user/add', [UserAccessController::class, 'pageAddUser']);
+Route::post('/admin/user/update', [UserAccessController::class, 'updateUser']);
+Route::post('/admin/user/disable', [UserAccessController::class, 'pageAddUser']);
+Route::post('/admin/user/delete', [UserAccessController::class, 'pageAddUser']);
 
 Route::get('/admin/courses', [AdminController::class, 'pageListCourses']);
 Route::get('/admin/courses/new', [AdminController::class, 'pageNewCourse']);

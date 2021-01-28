@@ -9,4 +9,5 @@ use Silber\Bouncer\Database\HasRolesAndAbilities;
 class LessonUser extends Model
 {
     use HasFactory, HasRolesAndAbilities;
+    protected $fillable = ['user_id', 'lesson_id'];
 }

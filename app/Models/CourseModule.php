@@ -31,7 +31,8 @@ class CourseModule extends Model
         if ($this->course->is_access_listed) {
             //TODO - разберись уже с этими блядскими отношениями
             return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
-                ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id));
+                ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id))
+                ->orderBy('lesson_id');
         } else {
             return $this->hasMany(ModuleLesson::class, 'module_id');
         }

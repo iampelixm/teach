@@ -18,12 +18,12 @@ class CourseModuleController extends Controller
 
     public function addCourseModule(Request $request)
     {
-        $request->validate([
+        $valid = $request->validate([
             'course_id' => 'required',
             'module_caption' => 'required',
             'module_presc' => 'required',
         ]);
-
+        if (!$valid) return back()->withInput();
         $modelCourseModule = new CourseModule;
         $modelCourseModule->course_id = $request->input('course_id');
         $modelCourseModule->module_caption = $request->input('module_caption');
@@ -42,12 +42,13 @@ class CourseModuleController extends Controller
 
     public function updateCourseModule(Request $request)
     {
-        $request->validate([
+        $valid = $request->validate([
             'module_id' => 'required',
             'course_id' => 'required',
             'module_caption' => 'required',
             'module_presc' => 'required',
         ]);
+        if (!$valid) return back()->withInput();
 
         $modelCourseModule = CourseModule::find($request->input('module_id'));
         $modelCourseModule->course_id = $request->input('course_id');

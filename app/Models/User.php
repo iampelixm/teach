@@ -41,4 +41,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function courses()
+    {
+        return $this->hasManyThrough(Course::class, CourseUser::class, 'user_id', 'course_id', 'id', 'course_id');
+    }
+
+    public function modules()
+    {
+        return $this->hasManyThrough(CourseModule::class, CourseModuleUser::class, 'user_id', 'module_id', 'id', 'module_id');
+    }
+
+    public function lessons()
+    {
+        return $this->hasManyThrough(ModuleLesson::class, LessonUser::class, 'user_id', 'lesson_id', 'id', 'lesson_id');
+    }
 }

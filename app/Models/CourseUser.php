@@ -9,4 +9,6 @@ use Silber\Bouncer\Database\HasRolesAndAbilities;
 class CourseUser extends Model
 {
     use HasFactory, HasRolesAndAbilities;
+
+    protected $table = 'course_users';
 }

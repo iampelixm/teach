@@ -10,12 +10,13 @@ class ModuleLessonController extends Controller
 {
     public function addModuleLesson(Request $request)
     {
-        $request->validate([
+        $valid = $request->validate([
             'module_id' => 'required',
             'lesson_caption' => 'required',
             'lesson_presc' => 'required',
             'lesson_text' => 'required'
         ]);
+        if (!$valid) return back()->withInput();
 
         $modelModuleLesson = new ModuleLesson;
         $modelModuleLesson->module_id = $request->input('module_id');
@@ -36,13 +37,15 @@ class ModuleLessonController extends Controller
 
     public function updateModuleLesson(Request $request)
     {
-        $request->validate([
+        $valid = $request->validate([
             'lesson_id' => 'required',
             'module_id' => 'required',
             'lesson_caption' => 'required',
             'lesson_presc' => 'required',
             'lesson_text' => 'required'
         ]);
+        if (!$valid) return back()->withInput();
+
         $lesson_id = $request->input('lesson_id');
         $modelModuleLesson = ModuleLesson::find($lesson_id);
         if (!$modelModuleLesson->save()) {

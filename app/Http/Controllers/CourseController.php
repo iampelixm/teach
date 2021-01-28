@@ -16,10 +16,11 @@ class CourseController extends Controller
 
     public function addCourse(Request $request)
     {
-        $request->validate([
+        $valid = $request->validate([
             'course_caption' => 'required',
             'course_presc' => 'required'
         ]);
+        if (!$valid) return back()->withInput();
 
         $modelCourse = new Course;
         $modelCourse->course_caption = $request->input('course_caption');
@@ -40,6 +41,8 @@ class CourseController extends Controller
             'course_caption' => 'required',
             'course_presc' => 'required'
         ]);
+        if (!$valid) return back()->withInput();
+
         $modelCourse = Course::find($request->input('course_id'));
         if (!$modelCourse) {
             return back()->withInput();

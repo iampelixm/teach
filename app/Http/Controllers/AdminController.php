@@ -113,7 +113,7 @@ class AdminController extends Controller
     public function pageNewCourse()
     {
         $current_user = BouncerFacade::create(Auth::user());
-        if ($current_user->can('manageCourse', User::class)) {
+        if ($current_user->can('manageCourse', Course::class)) {
             return view('admin.newcourse', $this->getTemplateData());
         } else {
             abort(403);
@@ -123,7 +123,7 @@ class AdminController extends Controller
     public function pageCourse(Request $request, $course_id)
     {
         $current_user = BouncerFacade::create(Auth::user());
-        if ($current_user->can('manageCourse', User::class)) {
+        if ($current_user->can('manageCourse', Course::class)) {
             $template_data = $this->getTemplateData();
             $template_data['course'] = Course::find($course_id);
             return view('admin.coursepage', $template_data);
@@ -135,7 +135,7 @@ class AdminController extends Controller
     public function pageListCourses()
     {
         $current_user = BouncerFacade::create(Auth::user());
-        if ($current_user->can('manageCourse', User::class)) {
+        if ($current_user->can('manageCourse', Course::class)) {
             $template_data = $this->getTemplateData();
             $template_data['courses'] = Course::all();
             return view('admin.courses', $template_data);
@@ -147,7 +147,7 @@ class AdminController extends Controller
     public function pageModule(Request $request, $module_id)
     {
         $current_user = BouncerFacade::create(Auth::user());
-        if ($current_user->can('manageCourseModule', User::class)) {
+        if ($current_user->can('manageCourseModule', CourseModule::class)) {
             $template_data = $this->getTemplateData();
             $template_data['coursemodule'] = CourseModule::find($module_id);
             return view('admin.modulepage', $template_data);
@@ -159,7 +159,7 @@ class AdminController extends Controller
     public function pageLesson(Request $request, $lesson_id)
     {
         $current_user = BouncerFacade::create(Auth::user());
-        if ($current_user->can('manageModuleLesson', User::class)) {
+        if ($current_user->can('manageModuleLesson', ModuleLesson::class)) {
             $template_data = $this->getTemplateData();
             $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
             $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
@@ -173,9 +173,7 @@ class AdminController extends Controller
 
     public function pageUserList()
     {
-
         $current_user = BouncerFacade::create(Auth::user());
-        Auth::user()->assign('admin');
         if ($current_user->can('manageUser', User::class)) {
             $template_data = $this->getTemplateData();
             $template_data['page_title'] = 'Управление пользователями';
@@ -188,10 +186,10 @@ class AdminController extends Controller
 
     public function pageUser(Request $request, $user_id)
     {
-
         $current_user = BouncerFacade::create(Auth::user());
-
         if ($current_user->can('manageUser', User::class)) {
+            //$us = new User;
+            //dd($us->courses()->toSql());
             $template_data = $this->getTemplateData();
             $template_data['page_title'] = 'Управление пользователем';
             $template_data['user'] = User::find($user_id);

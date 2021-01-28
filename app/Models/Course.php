@@ -17,4 +17,9 @@ class Course extends Model
     {
         return $this->hasMany(CourseModule::class, 'course_id', 'course_id');
     }
+
+    public function users()
+    {
+        //return $this->hasManyThrough(User::class, CourseUser::class, 'id', 'user_id');
+    }
 }

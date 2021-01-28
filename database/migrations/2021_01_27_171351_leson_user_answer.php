@@ -18,12 +18,12 @@ class LesonUserAnswer extends Migration
             $table->timestamps();
             $table->text('answer');
             $table->foreignId('lesson_id')
-                ->references('lessons')
-                ->on('lesson_id')
+                ->references('lesson_id')
+                ->on('module_lessons')
                 ->onDelete('cascade');
             $table->foreignId('user_id')
-                ->references('users')
-                ->on('id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }

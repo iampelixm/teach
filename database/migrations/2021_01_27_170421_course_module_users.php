@@ -13,16 +13,17 @@ class CourseModuleUsers extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('course_module_users');
         Schema::create('course_module_users', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignId('module_id')
-                ->references('course_modules')
-                ->on('module_id')
+                ->references('module_id')
+                ->on('course_modules')
                 ->onDelete('cascade');
             $table->foreignId('user_id')
-                ->references('users')
-                ->on('id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }

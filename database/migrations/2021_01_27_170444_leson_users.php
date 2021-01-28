@@ -13,16 +13,17 @@ class LesonUsers extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('lesson_users');
         Schema::create('lesson_users', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->foreignId('lesson_id')
-                ->references('lessons')
-                ->on('lesson_id')
+                ->references('lesson_id')
+                ->on('module_lessons')
                 ->onDelete('cascade');
             $table->foreignId('user_id')
-                ->references('users')
-                ->on('id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }

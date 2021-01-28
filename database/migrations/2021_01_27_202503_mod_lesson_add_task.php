@@ -13,7 +13,7 @@ class ModLessonAddTask extends Migration
      */
     public function up()
     {
-        Schema::table('lessons', function (Blueprint $table) {
+        Schema::table('module_lessons', function (Blueprint $table) {
             $table->text('task')->nullable();
         });
     }
@@ -25,7 +25,7 @@ class ModLessonAddTask extends Migration
      */
     public function down()
     {
-        Schema::table('lessons', function (Blueprint $table) {
+        Schema::table('module_lessons', function (Blueprint $table) {
             $table->dropColumn('task');
         });
     }

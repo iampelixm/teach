@@ -32,6 +32,9 @@
     @section('hero')
     @show
     @section('content')
+    <div class="container">
+        {!! $page_content ?? '' !!}
+    </div>
     @show
     @section('footer')
     @show

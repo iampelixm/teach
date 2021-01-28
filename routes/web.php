@@ -7,6 +7,7 @@ use App\Http\Controllers\FilesController;
 use App\Http\Controllers\ModuleLessonController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,12 +27,16 @@ Route::get('/', function () {
 
 Route::get('/admin', [AdminController::class, 'pageListCourses']);
 
+Route::get('/tech/buildPermissions', [AdminController::class, 'makeDefaultPermissions']);
+
+
+
 Route::get('/admin/user', [AdminController::class, 'pageUserList']);
 Route::get('/admin/user/{user_id}', [AdminController::class, 'pageUser']);
 Route::get('/admin/user/new', [AdminController::class, 'pageAddUser']);
 
 Route::post('/admin/user/add', [AdminController::class, 'pageAddUser']);
-Route::post('/admin/user/update', [AdminController::class, 'pageAddUser']);
+Route::post('/admin/user/update', [AdminController::class, 'updateUser']);
 Route::post('/admin/user/disable', [AdminController::class, 'pageAddUser']);
 Route::post('/admin/user/delete', [AdminController::class, 'pageAddUser']);
 

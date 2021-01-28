@@ -21,6 +21,7 @@
             <div class="col-lg-6">
         <h3>Роли пользователя</h3>
             <x-form action="/admin/user/update">
+                <x-form-input type="hidden" :bind="$user" name="id"/>
                 <x-form-group>
             @foreach($roles as $role)
                 @if($user->isAn($role['name']))

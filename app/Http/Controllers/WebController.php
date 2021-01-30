@@ -23,8 +23,18 @@ class WebController extends Controller
 
     public function getTemplateData()
     {
+        $nav = [];
+        $user = Auth::user();
+
+        if ($user->isA('su', 'admin', 'coursemanager', 'teache')) {
+            $nav[] = [
+                'link' => '/admin',
+                'caption' => 'Управление',
+            ];
+        }
+
         return [
-            'nav' => $this::nav,
+            'nav' => $nav,
             'page_title' => 'SeVe Realty Teach'
         ];
     }

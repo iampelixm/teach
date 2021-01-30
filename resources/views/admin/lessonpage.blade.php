@@ -11,6 +11,9 @@
             Занятие {{$modulelesson->lesson_caption}}
         </h1>
         
+        <div id="quiz_builder_container">
+        </div>
+        <button class="btn btn-lg btn-success" onclick="addQuizBuilder('#quiz_builder_container'); $(this).hide()">Добавить квиз</button>
         <div id="lesson_videos">
             <h3 class="title">Видео материалы</h3>
             @foreach($videos as $file_i=>$file)
@@ -47,7 +50,41 @@
             @component('component.formLesson', ['lesson'=>$modulelesson])
             @endcomponent 
         </div>
+
+
     </div>
 </main>
 
 @endsection
+
+@push('javascript')
+<script src="/js/quiz_builder.js"></script>
+<script>
+    function abuildQuizData(container)
+    {
+        $.fn.serializeObject = function()
+        {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+        };
+        var quiz_data=[];      
+        $(container).find('form').each(function(form_i, form)
+        {
+            quiz_data.push($(form).serializeObject());
+        });
+
+        console.log(quiz_data);
+    }
+</script>
+@endpush

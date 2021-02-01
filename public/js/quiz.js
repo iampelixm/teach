@@ -67,7 +67,7 @@ function buildQuiz(quizdata, container = '#quiz_container') {
     question_template['contacts_phone'] = function (question) {
         return `
             <div class="screen question contacts" id="${question.name}" data-name="${question.name}" data-title="${question.title}" data-type="${question.type}">
-                <h4 class="title text-center">${question.title}</h4>
+                <h4 class="title text-center">${question.question_title}</h4>
                 <div class="form-group">
                     <label for="contactsName">Ваше имя:</label>
                     <input class="form-control" type="text" name="contactName" id="contactName" required>
@@ -83,10 +83,30 @@ function buildQuiz(quizdata, container = '#quiz_container') {
         `;
     }
 
+    question_template['input'] = function (question) {
+        return `
+            <div class="screen question input" id="${question.question_name}" data-name="${question.question_name}" data-title="${question.question_title}" data-type="${question.question_type}">
+                <h4 class="title text-center">${question.question_title}</h4>
+                ${question.question_describe ? `<div class="describe">${question.question_describe}</div>` : ''}
+            </div>
+        `;
+    }
+
     variant_template['radio'] = function (variant) {
         return `
             <div class="item radio" data-value="${variant}">
                 ${variant}
+            </div>
+        `;
+    }
+
+    variant_template['input'] = function (variant) {
+        return `
+            <div class="item input" data-title="${variant}">
+                <div class="form-group">
+                    <label for="">${variant}:</label>
+                    <input class="form-control" type="text" name="${variant}" required>
+                </div>
             </div>
         `;
     }
@@ -136,11 +156,23 @@ function buildQuiz(quizdata, container = '#quiz_container') {
     else {
         $(quiz).data('message', quizdata.message);
     }
-    $(quiz).find('.item').on('click', function () {
+    $(quiz).find('.item.radio').on('click', function () {
         if ($(this).hasClass('radio')) {
             $(this).parent().find('.item').removeClass('selected');
             $(this).addClass('selected');
         }
+        renderQuiz(container);
+    });
+
+    $(quiz).find('.item.check').on('click', function () {
+        if ($(this).hasClass('check')) {
+            //$(this).parent().find('.item').removeClass('selected');
+            $(this).toggleClass('selected');
+        }
+        renderQuiz(container);
+    });
+
+    $(quiz).find('.item.input').find('input').on('keyup', function () {
         renderQuiz(container);
     });
     $(quiz).find('.btnprev').on('click', function () {
@@ -220,24 +252,26 @@ function validateQuiz(id) {
                 screen_id = unid();
                 $(screen).attr('id', screen_id);
             }
-            console.log('validating ', screen);
-            if (!$(screen).find('.item.selected').is('*')) {
-                $(quiz).data('active-screen', '#' + screen_id);
-                $(quiz).data('active-window', '.questions');
-                result = false;
-                break_flag = true;
+            if ($(screen).hasClass('radio') || $(screen).hasClass('check')) {
+                if (!$(screen).find('.item.selected').is('*')) {
+                    $(quiz).data('active-screen', '#' + screen_id);
+                    $(quiz).data('active-window', '.questions');
+                    result = false;
+                    break_flag = true;
+                }
             }
 
-            $(screen).find('input.invalid').removeClass('invalid')
-            if ($(screen).find('input:required:not(:valid)').is('*')) {
-                $(screen).find('input:required:not(:valid)').addClass('invalid');
-                $(quiz).data('active-window', '.questions');
-                $(quiz).data('active-screen', '#' + screen_id);
-                //renderQuiz(id);
-                result = false;
-                break_flag = true;
+            if ($(screen).hasClass('input') || $(screen).hasClass('check')) {
+                $(screen).find('input.invalid').removeClass('invalid')
+                if ($(screen).find('input:not(:valid)').is('*')) {
+                    $(screen).find('input:not(:valid)').addClass('invalid');
+                    $(quiz).data('active-window', '.questions');
+                    $(quiz).data('active-screen', '#' + screen_id);
+                    //renderQuiz(id);
+                    result = false;
+                    break_flag = true;
+                }
             }
-
             //Проверяем прерывание
             $(screen).find('.item.selected').each(function (ei, item) {
                 if ($(item).data('break')) {
@@ -253,7 +287,6 @@ function validateQuiz(id) {
         }
 
         if ($(screen).is(':visible')) {
-            console.log('last screen');
             return false;
         }
     });
@@ -261,23 +294,11 @@ function validateQuiz(id) {
     return result;
 }
 
-function quizDone(id) {
-    var quiz = $(id);
+function quizCollectAnswers(container) {
     var quizdata = {};
-    var validated = true;
-
-    $(quiz).find('.btndone:not(.disabled)').addClass('disabled');
-    if (!validateQuiz(id)) {
-        console.log('form not valid');
-        return '';
-    }
-
-    quizdata.form_id = $(quiz).attr('id');
-    quizdata.hash = MD5(quizdata.form_id);
-    quizdata.page = location.href;
     quizdata.answers = [];
+    $(container).find('.screen').each(function (qi, screen) {
 
-    $(quiz).find('.screen').each(function (qi, screen) {
         if ($(screen).hasClass('question')) {
             var answer = {};
             answer.question = {};
@@ -304,7 +325,24 @@ function quizDone(id) {
 
             if ($(screen).is(':visible')) return false; //выходим на текущем а
         }
+    });
+    return quizdata;
+}
 
+function quizDone(id, link, append = []) {
+    var quiz = $(id);
+    var quizdata = {};
+    var validated = true;
+
+    $(quiz).find('.btndone:not(.disabled)').addClass('disabled');
+    if (!validateQuiz(id)) {
+        console.log('form not valid');
+        return '';
+    }
+
+    quizdata = quizCollectAnswers(id)
+    $.each(append, function (append_key, append_value) {
+        quizdata.append_key = append_value;
     });
 
     var done_message = $(quiz).data('message');
@@ -319,7 +357,7 @@ function quizDone(id) {
     //$(quiz).find('.messages').find('.message').html('обработка');
     quizMessage(quiz, '<h4 class="title text-center">Обработка</h4>');
     $.post(
-        '/leadform/',
+        link,
         quizdata,
         function (response) {
             quizMessage(quiz, done_message);
@@ -386,26 +424,40 @@ function renderQuiz(id) {
             $(controls_container).find('.btndone.disabled').removeClass('disabled');
             $(controls_container).find('.btnnext:not(.disabled)').addClass('disabled');
         }
-        //не выбран ответ на текущей странице
-        if (!$(active_screen).find('.item.selected').is('*')) {
-            //запретить далее
-            $(controls_container).find('.btnnext:not(.disabled)').addClass('disabled');
-            //запретить завершение
-            $(controls_container).find('.btndone:not(.disabled)').addClass('disabled');
-        }
+        /////////////////////////////
+        ////для переключателей
+        if ($(active_screen).hasClass('radio')) {
+            //не выбран ответ на текущей странице
+            if (!$(active_screen).find('.item.radio.selected').is('*')) {
+                //запретить далее
+                $(controls_container).find('.btnnext:not(.disabled)').addClass('disabled');
+                //запретить завершение
+                $(controls_container).find('.btndone:not(.disabled)').addClass('disabled');
+            }
 
-        //не выбран правильный ответ
-        if ($(active_screen).data('onlycorrect')) {
-            if (!$(active_screen).find('.item.selected').data('correct')) {
+            //не выбран правильный ответ
+            if ($(active_screen).data('onlycorrect')) {
+                if (!$(active_screen).find('.item.radio.selected').data('correct')) {
+                    //запретить далее
+                    $(controls_container).find('.btnnext:not(.disabled)').addClass('disabled');
+                    //запретить завершение
+                    $(controls_container).find('.btndone:not(.disabled)').addClass('disabled');
+                }
+            }
+        }
+        /////////////////////////////
+        ////для INPUT
+        if ($(active_screen).hasClass('input')) {
+            if (!$(active_screen).find('input:valid').is('*')) {
+                console.log('no valid input');
                 //запретить далее
                 $(controls_container).find('.btnnext:not(.disabled)').addClass('disabled');
                 //запретить завершение
                 $(controls_container).find('.btndone:not(.disabled)').addClass('disabled');
             }
         }
-
-        //ответ завершает квиз
-        if ($(active_screen).find('.item.selected').data('break')) {
+        //ответ RADIO или CHECK завершает квиз
+        if ($(active_screen).find('.item.radio.selected,.item.check.selected').data('break')) {
             $(quiz).find('.btnnext:not(.disabled)').addClass('disabled');
             //$(quiz).find('.btnprev:not(.disabled)').addClass('disabled');
             $(quiz).find('.btndone.disabled').removeClass('disabled');

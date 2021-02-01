@@ -49,14 +49,15 @@
             @endcomponent 
         </div>
         <h3 class="title mt-4">Опросник</h3>
-        <div id="quiz_builder_container">
+        <div id="quiz_builder_wrapper" class="collapse">
+            <div id="quiz_builder_container">
+            </div>
+            <button class="btn btn-success" onclick="quizBuilderAddQuestion('#quiz_builder_container');">Добавить вопрос</button>
+            <button class="btn btn-info" onclick="saveQuiz('#quiz_builder_container', '/admin/lessons/update');">Сохранить</button>
+            <button class="btn btn-warning" onclick="buildQuiz(buildQuizData('#quiz_builder_container'), '#quiz_out',)">Смотреть</button>
         </div>
-
-        <button class="btn btn-success" onclick="quizBuilderAddQuestion('#quiz_builder_container');">ADD QUESTION</button>
-        <button class="btn btn-success" onclick="quizBuilderLoadQuiz('#quiz_builder_container', {{$modulelesson->lesson_quiz ?? ''}});">LOAD QUIZ</button>
-        <button class="btn btn-success" onclick="saveQuiz('#quiz_builder_container', '/admin/lessons/update');">SAVE QUIZ</button>
-        <button class="btn btn-warning" onclick="buildQuiz(buildQuizData('#quiz_builder_container'), '#quiz_out',)">VIEW</button>
-        <div id="quiz_out">QUIZ WILL BE THERE</div>
+        <button class="btn btn-success" data-toggle="collapse" data-target="#quiz_builder_wrapper" aria-expanded="false" aria-controls="quiz_builder_wrapper" onclick="$(this).hide(); quizBuilderLoadQuiz('#quiz_builder_container', {{$modulelesson->lesson_quiz ?? ''}});">Загрузить квиз</button>
+        <div id="quiz_out"></div>
     </div>
 </main>
 @endsection

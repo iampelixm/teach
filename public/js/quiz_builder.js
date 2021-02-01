@@ -76,13 +76,15 @@ let quiz_builder_answer_variant_template = function (data) {
 
 let quiz_builder_question_template = function (data) {
     return `
-    <form class="quiz p-2">
+    <form class="quiz p-2 mt-4">
+    <h2 class="title text-center">Вопрос</h2>
         <div class="quiz_question">
             <div class="form-group">
-                <label>Показывать ответы</label>
+                <label>Формат ответов</label>
                 <select class="form-control" name="question_type">
-                    <option value="contacts" ${data.question_type == 'contacts' ? 'selected' : ''}>Контакты</option>
-                    <option value="radio" ${data.question_type == 'radio' ? 'selected' : ''}>Списком</option>
+                    <option value="contacts_phone" ${data.question_type == 'contacts_phone' ? 'selected' : ''}>Контакты</option>
+                    <option value="radio" ${data.question_type == 'radio' ? 'selected' : ''}>Один на выбор</option>
+                    <option value="input" ${data.question_type == 'input' ? 'selected' : ''}>Ручной ввод</option>
                 </select>
             </div>
 
@@ -111,7 +113,7 @@ let quiz_builder_question_template = function (data) {
                 </div>                
             </div>
             
-            <h4 class="title mt-4">Варианты ответов</h4>
+            <h3 class="title mt-4">Ответы:</h3>
             <button class="addanswervariant btn btn-sm btn-info">Добавить ответ</button>
             <div class="container answer_variants">                
                 ${quiz_builder_answer_variant_template(data)}

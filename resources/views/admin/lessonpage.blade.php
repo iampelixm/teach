@@ -11,11 +11,9 @@
             Занятие {{$modulelesson->lesson_caption}}
         </h1>
         
-        <div id="quiz_builder_container">
-        </div>
-        <button class="btn btn-lg btn-success" onclick="addQuizBuilder('#quiz_builder_container'); $(this).hide()">Добавить квиз</button>
+        <h3 class="title mt-4">Видео материалы</h3>
         <div id="lesson_videos">
-            <h3 class="title">Видео материалы</h3>
+            
             @foreach($videos as $file_i=>$file)
             <div class="border mt-1">
                 <a class="btn btn-outline-danger btn-sm" href="/admin/lessons/deletefile?file={{$file}}">X</a>
@@ -50,41 +48,47 @@
             @component('component.formLesson', ['lesson'=>$modulelesson])
             @endcomponent 
         </div>
+        <h3 class="title mt-4">Опросник</h3>
+        <div id="quiz_builder_container">
+        </div>
 
-
+        <button class="btn btn-success" onclick="quizBuilderAddQuestion('#quiz_builder_container');">ADD QUESTION</button>
+        <button class="btn btn-success" onclick="quizBuilderLoadQuiz('#quiz_builder_container', {{$modulelesson->lesson_quiz ?? ''}});">LOAD QUIZ</button>
+        <button class="btn btn-success" onclick="saveQuiz('#quiz_builder_container', '/admin/lessons/update');">SAVE QUIZ</button>
+        <button class="btn btn-warning" onclick="buildQuiz(buildQuizData('#quiz_builder_container'), '#quiz_out',)">VIEW</button>
+        <div id="quiz_out">QUIZ WILL BE THERE</div>
     </div>
 </main>
-
 @endsection
 
 @push('javascript')
 <script src="/js/quiz_builder.js"></script>
+<script src="/js/quiz.js"></script>
 <script>
-    function abuildQuizData(container)
-    {
-        $.fn.serializeObject = function()
-        {
-        var o = {};
-        var a = this.serializeArray();
-        $.each(a, function() {
-            if (o[this.name]) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-        return o;
-        };
-        var quiz_data=[];      
-        $(container).find('form').each(function(form_i, form)
-        {
-            quiz_data.push($(form).serializeObject());
-        });
+function saveQuiz(container, link)
+{
+    var quizdata=buildQuizData(container);
+    console.log('sqving', quizdata);
+    var fdata=new FormData();
+    fdata.append('lesson_id','{{$modulelesson->lesson_id}}');
+    fdata.append('lesson_quiz',quizdata);
 
-        console.log(quiz_data);
-    }
+    fdata={};
+    fdata.lesson_id='{{$modulelesson->lesson_id}}';
+    fdata.lesson_quiz=quizdata;
+    fdata._token="{{csrf_token()}}";
+    $.post(
+        link,
+        fdata,
+        function(response){
+            //console.log(response);
+        },
+        ''
+    ).fail(function(resp){console.log(resp)});
+}
 </script>
+@endpush
+
+@push('css')
+<link href="{{ asset('css/quiz.css') }}" rel="stylesheet">
 @endpush

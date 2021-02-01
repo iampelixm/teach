@@ -23,10 +23,14 @@ class ModuleLessonController extends Controller
         $modelModuleLesson->lesson_caption = $request->input('lesson_caption');
         $modelModuleLesson->lesson_presc = $request->input('lesson_presc');
         $modelModuleLesson->lesson_text = $request->input('lesson_text');
+
+        if ($request->input('lesson_task')) {
+            $modelModuleLesson->lesson_task = $request->input('lesson_task');
+        }
         $modelModuleLesson->lesson_additional = '[]';
 
         if (!$modelModuleLesson->save()) {
-            return back()->withInput()->withErrors('message', 'asdasd', 'asda');
+            return back()->withInput();
         }
 
         return redirect()->action(
@@ -38,11 +42,7 @@ class ModuleLessonController extends Controller
     public function updateModuleLesson(Request $request)
     {
         $valid = $request->validate([
-            'lesson_id' => 'required',
-            'module_id' => 'required',
-            'lesson_caption' => 'required',
-            'lesson_presc' => 'required',
-            'lesson_text' => 'required'
+            'lesson_id' => 'required'
         ]);
         if (!$valid) return back()->withInput();
 
@@ -51,16 +51,30 @@ class ModuleLessonController extends Controller
         if (!$modelModuleLesson->save()) {
             return back()->withInput()->withErrors('message', 'asdasd', 'asda');
         }
-        $modelModuleLesson->module_id = $request->input('module_id');
+
+        foreach (array_keys($modelModuleLesson->toArray()) as $field) {
+
+            if ($request->input($field)) {
+                $modelModuleLesson->$field = $request->input($field);
+            }
+        }
+        $modelModuleLesson->save();
+        /*
         $modelModuleLesson->lesson_caption = $request->input('lesson_caption');
         $modelModuleLesson->lesson_presc = $request->input('lesson_presc');
         $modelModuleLesson->lesson_text = $request->input('lesson_text');
         $modelModuleLesson->lesson_additional = '[]';
+        if ($request->input('lesson_task')) {
+            $modelModuleLesson->lesson_task = $request->input('lesson_task');
+        }
 
+        if ($request->input('lesson_quiz')) {
+            $modelModuleLesson->lesson_quiz = $request->input('lesson_quiz');
+        }
         if (!$modelModuleLesson->save()) {
             return back()->withInput()->withErrors('message', 'asdasd', 'asda');
         }
-
+        */
         return redirect()->action(
             [AdminController::class, 'pageLesson'],
             ['lesson_id' => $modelModuleLesson->lesson_id]

@@ -1,0 +1,149 @@
+@keyframes sonar-effect {
+  0% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 5px #fff, 0 0 10px 10px #fff, 0 0 0 10px #fff;
+  }
+  100% {
+    box-shadow: 0 0 0 5px #fff, 0 0 10px 10px #fff, 0 0 0 10px #fff;
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInFromNone {
+    0% {
+        display: none;
+        opacity: 0;
+    }
+
+    1% {
+        display: block;
+        opacity: 0;
+    }
+
+    100% {
+        display: block;
+        opacity: 1;
+    }
+}
+
+.quiz
+{
+    border: 1px solid #EEE;
+    border-radius: 15px;
+    background-color: #FFF;
+    padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px;
+}
+
+.message
+{
+    padding: 10px;
+}
+
+.quiz .item
+{
+    cursor: pointer;
+}
+
+.quiz .item.radio.selected
+{
+    
+}
+
+.quiz .item.radio:before
+{
+    content: '';
+    border: 1px solid gray;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    position: relative;
+    margin-right: 5px;
+}
+
+.quiz .item.radio.selected:before
+{
+    content: '';
+    border: 1px solid red;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    position: relative;
+}
+
+.quiz .item.radio
+{
+    padding: 5px;
+    border: 1px solid #999;
+    margin: 10px;
+    border-radius: 7px;
+    transition: 0.3s;
+}
+
+.quiz .item.radio:hover
+{
+    background: #EEE;
+}
+.quiz .item.radio.selected
+{
+    background: #AAA;
+}
+.btn
+{
+    transition: 0.3s;
+}
+.btn.disabled
+{
+    opacity: 0.0;
+    pointer-events: none;
+    transition: 0s;
+}
+
+.question .describe
+{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.quiz .message
+{
+    padding-bottom: 20px;
+}
+
+.quiz input.invalid
+{
+    outline: 1px solid red;
+}
+
+.quiz input.invalid:after
+{
+    content: 'Поле не заполнено';
+    position: relative;
+}
+
+.window
+{
+    display: none;
+}
+
+.window.active
+{
+    display: block;
+}
+
+.screen
+{
+    display: none;
+}
+
+.screen.active
+{
+    display: block;
+    animation-duration: 1s;
+    animation-name: fadeInFromNone;
+}

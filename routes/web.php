@@ -22,10 +22,6 @@ use App\Http\Controllers\UserAccessController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 
 Route::get('/admin', [AdminController::class, 'pageListCourses']);
 
@@ -73,7 +69,9 @@ Route::get('/', [WebController::class, 'index']);
 
 Route::get('/course/{course_id}', [WebController::class, 'pageCourse']);
 Route::get('/module/{module_id}', [WebController::class, 'pageModule']);
+Route::get('/lessontask/{lesson_id}', [WebController::class, 'pageLessonTask']);
 Route::get('/lesson/{lesson_id}', [WebController::class, 'pageLesson']);
+
 
 
 Route::get('/file/get', [FilesController::class, 'getFile']);

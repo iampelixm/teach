@@ -59,22 +59,7 @@ class ModuleLessonController extends Controller
             }
         }
         $modelModuleLesson->save();
-        /*
-        $modelModuleLesson->lesson_caption = $request->input('lesson_caption');
-        $modelModuleLesson->lesson_presc = $request->input('lesson_presc');
-        $modelModuleLesson->lesson_text = $request->input('lesson_text');
-        $modelModuleLesson->lesson_additional = '[]';
-        if ($request->input('lesson_task')) {
-            $modelModuleLesson->lesson_task = $request->input('lesson_task');
-        }
 
-        if ($request->input('lesson_quiz')) {
-            $modelModuleLesson->lesson_quiz = $request->input('lesson_quiz');
-        }
-        if (!$modelModuleLesson->save()) {
-            return back()->withInput()->withErrors('message', 'asdasd', 'asda');
-        }
-        */
         return redirect()->action(
             [AdminController::class, 'pageLesson'],
             ['lesson_id' => $modelModuleLesson->lesson_id]

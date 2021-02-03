@@ -73,7 +73,7 @@ class WebController extends Controller
     public function pageModule(Request $request, $module_id)
     {
         $user = Auth::user();
-        if (!BouncerFacade::create($user)->can('viewCourses')) abort(403);
+        if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
         $course_module = CourseModule::find($module_id);
 
         if ($course_module->course->is_access_listed) {
@@ -94,12 +94,23 @@ class WebController extends Controller
     public function pageLesson(Request $request, $lesson_id)
     {
         $user = Auth::user();
-        if (!BouncerFacade::create($user)->can('viewCourses')) abort(403);
+        if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
         $template_data = $this->getTemplateData();
         $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
         $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
         $template_data['all_files'] = Storage::allFiles('lessons/' . $lesson_id);
         return view('user.lessonpage', $template_data);
+    }
+
+    public function pageLessonTask(Request $request, $lesson_id)
+    {
+        $user = Auth::user();
+        if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
+        $template_data = $this->getTemplateData();
+        $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
+        $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
+        $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
+        return view('user.lessontasknpage', $template_data);
     }
 }

@@ -10,20 +10,11 @@
         <a href="/course/{{$modulelesson->module->course->course_id}}">{{$modulelesson->module->course->course_caption}}</a> /
         <a href="/module/{{$modulelesson->module->module_id}}">{{$modulelesson->module->module_caption}}</a>
         <h1 class="title text-center mt-2 mb-4">
-            {{$modulelesson->lesson_caption}}
+            {{$modulelesson->lesson_caption}}. Задание
         </h1>
         
-        @if(!collect($videos)->isEmpty())
-        <div id="lesson_videos">
-            @foreach($videos as $file_i=>$file)
-            <video controls style="width: 100%" class="vpl" playsinline>
-                <source src="/file/get?file={{$file}}" type="video/mp4">
-            </video>
-            @endforeach
-        </div>
-        @endif
         <div class="lesson_content border my-4">
-            {!!$modulelesson->lesson_text!!}
+            {!!$modulelesson->lesson_task!!}
         </div>
         @if(!collect($documents)->isEmpty())
         <div id="lesson_documents">
@@ -35,8 +26,6 @@
             @endforeach      
         </div>
         @endif
-
-        <a class="btn btn-info" href="/lessontask/{{$modulelesson->lesson_id}}">Перейти к заданию</a>
     </div>
 </main>
 <script src="/js/plyr.min.js"></script>

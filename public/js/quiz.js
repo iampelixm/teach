@@ -1,4 +1,4 @@
-function buildQuiz(quizdata, container = '#quiz_container') {
+function buildQuiz(container = '#quiz_container', quizdata) {
 
     var quiz = $(container);
     $(quiz).find('*').remove();
@@ -130,7 +130,10 @@ function buildQuiz(quizdata, container = '#quiz_container') {
         var question_item = question_template[question.question_type](question);
         question_item = $(question_item).appendTo(questions_container);
         if (!question.answer_variant.push) question.answer_variant = [question.answer_variant];
+
+        if (!question.answer_break_quiz) question.answer_break_quiz = [];
         if (!question.answer_break_quiz.push) question.answer_break_quiz = [question.answer_break_quiz];
+        if (!question.break_message) question.break_message = [];
         if (!question.break_message.push) question.break_message = [question.break_message];
 
         if (question.question_only_correct_answer == 'yes') $(question_item).data('onlycorrect', true);
@@ -329,10 +332,20 @@ function quizCollectAnswers(container) {
     return quizdata;
 }
 
-function quizDone(id, link, append = []) {
+function quizDone(id, link = '', append = {}) {
     var quiz = $(id);
-    var quizdata = {};
-    var validated = true;
+
+    if (quiz_data_append) {
+        $.each(quiz_data_append, function (append_key, append_value) {
+            append[append_key] = append_value;
+        });
+    }
+
+    console.log(append);
+
+    if (!link) {
+        if (quiz_link) link = quiz_link;
+    }
 
     $(quiz).find('.btndone:not(.disabled)').addClass('disabled');
     if (!validateQuiz(id)) {
@@ -340,9 +353,10 @@ function quizDone(id, link, append = []) {
         return '';
     }
 
-    quizdata = quizCollectAnswers(id)
+    var send_data = {};
+    send_data = quizCollectAnswers(id);
     $.each(append, function (append_key, append_value) {
-        quizdata.append_key = append_value;
+        send_data[append_key] = append_value;
     });
 
     var done_message = $(quiz).data('message');
@@ -356,16 +370,20 @@ function quizDone(id, link, append = []) {
 
     //$(quiz).find('.messages').find('.message').html('обработка');
     quizMessage(quiz, '<h4 class="title text-center">Обработка</h4>');
+    console.log("sending quiz to", link);
+    console.log(send_data);
     $.post(
         link,
-        quizdata,
+        send_data,
         function (response) {
+            console.log('RESP');
+            console.log(response);
             quizMessage(quiz, done_message);
-            //$(quiz).find('.window.messages').find('.message').html(done_message);
         },
-        'json'
+        ''
     ).
         fail(function (response) {
+            console.log(response);
             quizMessage(quiz, fail_message);
         });
 }

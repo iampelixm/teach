@@ -22,7 +22,7 @@
             @endforeach
         </div>
         @endif
-        <div class="lesson_content border my-4">
+        <div class="lesson_content my-4">
             {!!$modulelesson->lesson_text!!}
         </div>
         @if(!collect($documents)->isEmpty())
@@ -35,8 +35,12 @@
             @endforeach      
         </div>
         @endif
-
+        @if($modulelesson->lesson_task)
         <a class="btn btn-info" href="/lessontask/{{$modulelesson->lesson_id}}">Перейти к заданию</a>
+        @endif
+        @if($modulelesson->lesson_quiz)
+        <a class="btn btn-info" href="/lessonquiz/{{$modulelesson->lesson_id}}">Перейти к тесту</a>
+        @endif        
     </div>
 </main>
 <script src="/js/plyr.min.js"></script>

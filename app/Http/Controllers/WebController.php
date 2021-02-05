@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseModule;
+use App\Models\LessonUserAnswer;
 use App\Models\ModuleLesson;
+use App\Models\UserLessonProccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Silber\Bouncer\BouncerFacade;
@@ -100,6 +102,10 @@ class WebController extends Controller
         $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
         $template_data['all_files'] = Storage::allFiles('lessons/' . $lesson_id);
+        //Если еще нет записи в таблице прохождения уроков - создадим ее со статусом opened (задается по умолчанию)
+        if ($user->isA('student')) {
+            $lessonProcess = UserLessonProccess::firstOrNew(['user_id' => $user->id, 'lesson_id']);
+        }
         return view('user.lessonpage', $template_data);
     }
 
@@ -109,8 +115,23 @@ class WebController extends Controller
         if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
         $template_data = $this->getTemplateData();
         $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
+        $template_data['user_answer'] = LessonUserAnswer::where(['user_id' => $user->id, 'lesson_id' => $lesson_id])->first();
+        $template_data['answer_files'] = Storage::allFiles('students/' . $user->id . '/lessons/' . $lesson_id);
         $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
-        return view('user.lessontasknpage', $template_data);
+
+        return view('user.lessontaskpage', $template_data);
+    }
+
+    public function pageLessonQuiz(Request $request, $lesson_id)
+    {
+        $user = Auth::user();
+        if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
+        $template_data = $this->getTemplateData();
+        $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
+        $template_data['user_answer'] = LessonUserAnswer::where(['user_id' => $user->id, 'lesson_id' => $lesson_id])->get();
+        $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
+        $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
+        return view('user.lessonquizpage', $template_data);
     }
 }

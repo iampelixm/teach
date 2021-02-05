@@ -162,6 +162,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+
         /*
          * Package Service Providers...
          */
@@ -177,6 +178,9 @@ return [
 
         //ACL
         Silber\Bouncer\BouncerServiceProvider::class,
+
+        //DEBUG
+        Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -230,7 +234,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Bouncer' => Silber\Bouncer\BouncerFacade::class,
-
+        'DebugBar' => Barryvdh\Debugbar\ServiceProvider::class,
     ],
 
 ];

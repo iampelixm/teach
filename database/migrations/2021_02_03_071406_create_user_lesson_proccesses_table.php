@@ -17,7 +17,7 @@ class CreateUserLessonProccessesTable extends Migration
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('lesson_id')->references('lesson_id')->on('module_lessons')->onDelete('cascade');
             $table->string('lesson_status')->default('opened');
-            $table->$table->timestamps();
+            $table->timestamps();
         });
     }
 

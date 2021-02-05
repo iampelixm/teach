@@ -49,7 +49,7 @@ class ModuleLessonController extends Controller
         $lesson_id = $request->input('lesson_id');
         $modelModuleLesson = ModuleLesson::find($lesson_id);
         if (!$modelModuleLesson->save()) {
-            return back()->withInput()->withErrors('message', 'asdasd', 'asda');
+            return back()->withInput();
         }
 
         foreach (array_keys($modelModuleLesson->toArray()) as $field) {

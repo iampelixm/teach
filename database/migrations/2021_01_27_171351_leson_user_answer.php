@@ -13,10 +13,10 @@ class LesonUserAnswer extends Migration
      */
     public function up()
     {
-        Schema::create('lesson_user_answes', function (Blueprint $table) {
-            $table->id();
+        Schema::create('lesson_user_answers', function (Blueprint $table) {
+            $table->id('answer_id');
             $table->timestamps();
-            $table->text('answer');
+            $table->text('answer_text');
             $table->foreignId('lesson_id')
                 ->references('lesson_id')
                 ->on('module_lessons')
@@ -25,6 +25,7 @@ class LesonUserAnswer extends Migration
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
+            $table->json('answer_quiz');
         });
     }
 
@@ -35,6 +36,6 @@ class LesonUserAnswer extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lesson_user_answes');
+        Schema::dropIfExists('lesson_user_answers');
     }
 }

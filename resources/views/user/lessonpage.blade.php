@@ -43,8 +43,11 @@
         @endif        
     </div>
 </main>
+@endsection
+
+@push('javascript')
 <script src="/js/plyr.min.js"></script>
 <script>
-const players = Plyr.setup('video');
+    const players = Plyr.setup('video');
 </script>
-@endsection
+@endpush

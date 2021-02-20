@@ -104,7 +104,7 @@ class WebController extends Controller
         $template_data['all_files'] = Storage::allFiles('lessons/' . $lesson_id);
         //Если еще нет записи в таблице прохождения уроков - создадим ее со статусом opened (задается по умолчанию)
         if ($user->isA('student')) {
-            $lessonProcess = UserLessonProccess::firstOrNew(['user_id' => $user->id, 'lesson_id']);
+            $lessonProcess = UserLessonProccess::firstOrNew(['user_id' => $user->id, 'lesson_id' => $lesson_id]);
         }
         return view('user.lessonpage', $template_data);
     }

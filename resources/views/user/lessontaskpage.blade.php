@@ -4,7 +4,8 @@
     <div class="container">
         <a href="/">Курсы</a> / 
         <a href="/course/{{$modulelesson->module->course->course_id}}">{{$modulelesson->module->course->course_caption}}</a> /
-        <a href="/module/{{$modulelesson->module->module_id}}">{{$modulelesson->module->module_caption}}</a>
+        <a href="/module/{{$modulelesson->module->module_id}}">{{$modulelesson->module->module_caption}}</a> /
+        <a href="/lesson/{{$modulelesson->lesson_id}}">{{$modulelesson->lesson_caption}}</a>
         <h1 class="title text-center mt-2 mb-4">
             {{$modulelesson->lesson_caption}}. Задание
         </h1>

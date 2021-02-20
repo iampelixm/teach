@@ -35,7 +35,7 @@
                 </x-form>
             </div>
         </div>
-        <div class="row">
+        <div class="row">   
             <div class="col-lg-6">
                 <h3 class="title my-4 mb-2">Открытые курсы</h3>
                 <x-form action="/admin/user/updateLessonAccess">
@@ -86,7 +86,7 @@
                             @endforeach
                             </div>
                         </div>
-                    @endforeach
+                    @endforeach 
                     </div>
                 @endforeach
                 <x-form-submit class="mt-4">Обновить</x-form-submit>

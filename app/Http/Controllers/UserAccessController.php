@@ -17,7 +17,7 @@ class UserAccessController extends Controller
 {
     public function updateUser(Request $request)
     {
-        if (!BouncerFacade::create(Auth::user())->can('manageUser', User::class)) abort(403);
+        if (!BouncerFacade::create(Auth::user())->can('manageUser', User::class)) abort(403, 'Вы не можете изменять данные пользователей');
 
         $user_id = $request->input('id');
         $userModel = User::find($user_id);
@@ -32,7 +32,7 @@ class UserAccessController extends Controller
 
         if (!empty($request->input('password'))) {
 
-            $userModel->password = Hash::make($request->newPassword);
+            $userModel->password = Hash::make($request->input('password'));
             $userModel->save();
         }
 
@@ -62,7 +62,7 @@ class UserAccessController extends Controller
     public function updateLessonAccess(Request $request)
     {
 
-        if (!BouncerFacade::create(Auth::user())->can('manageModuleLessonUserAccess', LessonUser::class)) abort(403);
+        if (!BouncerFacade::create(Auth::user())->can('manageModuleLessonUserAccess', LessonUser::class)) abort(403, 'Нет разрешение на управление доступом пользователей к занятиям');
 
         $user_id = $request->input('id');
         $courses = $request->input('courses');
@@ -70,7 +70,8 @@ class UserAccessController extends Controller
         $lessons = $request->input('lessons');
 
         if ($courses) {
-            CourseUser::where('user_id', '=', $user_id)->delete();
+            $del = CourseUser::where('user_id', '=', $user_id)->delete();
+            //dd($del);
             foreach ($courses as $course) {
                 CourseUser::updateOrCreate(['user_id' => $user_id, 'course_id' => $course]);
             }

@@ -39,7 +39,11 @@
     @section('footer')
     @show
    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script id="app" src="{{ asset('js/app.js') }}" defer></script>
+    <script>
+        appjs=document.getElementById('app');
+    </script>
+
     @stack('javascript')
 </body>
 </html>

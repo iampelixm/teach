@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CourseModule;
 use Illuminate\Http\Request;
+use App\Models\Log;
+use Illuminate\Support\Facades\Auth;
 
 class CourseModuleController extends Controller
 {
@@ -34,6 +36,15 @@ class CourseModuleController extends Controller
             return back()->withInput()->withErrors('message', 'asdasd', 'asda');
         }
 
+        Log::create([
+            'log_message' => 'Создан модуль ' .
+                $request->input('module_caption') . ' (' . $modelCourseModule->module_id . ')
+            курса ' . $modelCourseModule->course->course_caption .
+                '(' . $modelCourseModule->course_id . ')
+            пользователем ' .
+                Auth::user()->name . ' (' . Auth::user()->id . ')'
+        ]);
+
         return redirect()->action(
             [AdminController::class, 'pageCourse'],
             ['course_id' => $modelCourseModule->course_id]
@@ -59,9 +70,57 @@ class CourseModuleController extends Controller
             return back()->withInput()->withErrors('message', 'asdasd', 'asda');
         }
 
+        Log::create([
+            'log_message' => 'Изменен модуль ' .
+                $request->input('module_caption') . ' (' . $modelCourseModule->module_id . ')
+            курса ' . $modelCourseModule->course->course_caption .
+                '(' . $modelCourseModule->course_id . ')
+            пользователем ' .
+                Auth::user()->name . ' (' . Auth::user()->id . ')'
+        ]);
+
         return redirect()->action(
             [AdminController::class, 'pageModule'],
             ['module_id' => $modelCourseModule->module_id]
         );
+    }
+
+    public function deleteCourseModule(Request $request)
+    {
+        $valid = $request->validate(['module_id' => 'required']);
+        if (!$valid) {
+            return 'no';
+        }
+
+        $modelCourseModule = CourseModule::find($request->input('module_id'));
+        if ($modelCourseModule) {
+            foreach ($modelCourseModule->lessons as $lesson) {
+                if ($lesson->delete()) {
+                    Log::create([
+                        'log_message' => 'Удаление занятия '
+                            . $lesson->lesson_caption . ' (' . $lesson->lesson_id . ') '
+                            . ' при удаление модуля ' .
+                            $modelCourseModule->module_caption . ' (' . $modelCourseModule->module_id . ')'
+                            . ' пользователем ' .
+                            Auth::user()->name . ' (' . Auth::user()->id . ')'
+                    ]);
+                } else {
+                    return 'Не удалилось занятие ' . $lesson->lesson_caption;
+                }
+            }
+            if ($modelCourseModule->delete()) {
+                Log::create([
+                    'log_message' => 'Удален модуль ' .
+                        $modelCourseModule->module_caption . ' (' . $modelCourseModule->module_id . ')
+            пользователем ' .
+                        Auth::user()->name . ' (' . Auth::user()->id . ')'
+                ]);
+                return 'ok';
+            } else {
+                return 'Не удалось удалить модуль';
+            }
+        } else {
+            return 'not found';
+        }
     }
 }

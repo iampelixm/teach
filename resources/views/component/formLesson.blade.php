@@ -15,9 +15,9 @@ if(empty($lesson->lesson_id))
 <x-form action="{!!$form_action!!}">
     <x-form-input :bind="$lesson" type="hidden" name="lesson_id"/>
     <x-form-input :bind="$lesson" type="hidden" name="module_id"/>
-    <x-form-input :bind="$lesson" type="text" name="lesson_caption" label="Название урока"/>
-    <x-form-textarea :bind="$lesson" name="lesson_presc" label="Короткое описание урока"/>
-    <x-form-textarea :bind="$lesson" id="editor" class="ckeditor" name="lesson_text" label="Контент урока"/>
+    <x-form-input :bind="$lesson" type="text" name="lesson_caption" label="*Название урока" required/>
+    <x-form-textarea :bind="$lesson" name="lesson_presc" label="*Короткое описание урока" required/>
+    <x-form-textarea :bind="$lesson" id="editor" class="ckeditor" name="lesson_text" label="*Контент урока"/>
     <x-form-textarea :bind="$lesson" id="editor1" class="ckeditor" name="lesson_task" label="Задание урока"/>
     <x-form-submit>{{$submit_caption}}</x-form-submit>
     @if(empty($lesson->lesson_id))

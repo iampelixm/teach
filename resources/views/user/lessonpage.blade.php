@@ -17,7 +17,7 @@
         <div id="lesson_videos">
             @foreach($videos as $file_i=>$file)
             <video controls style="width: 100%" class="vpl" playsinline>
-                <source src="/file/get?file={{$file}}" type="video/mp4">
+                <source src="{{Storage::url($file)}}" type="video/mp4">
             </video>
             @endforeach
         </div>

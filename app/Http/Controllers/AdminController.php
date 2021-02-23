@@ -10,6 +10,7 @@ use App\Models\LessonUser;
 use App\Models\CourseModuleUser;
 use App\Models\CourseUser;
 use App\Models\LessonUserAnswer;
+use App\Models\Log;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -56,7 +57,7 @@ class AdminController extends Controller
         }
 
 
-        if ($user->isAn('su', 'coursemanager')) {
+        if ($user->isA('su', 'coursemanager')) {
             array_push(
                 $nav,
                 [
@@ -86,6 +87,11 @@ class AdminController extends Controller
                             'title' => 'Роли',
                         ]
                     ]
+                ],
+                [
+                    'link' => '/admin/log',
+                    'caption' => 'Лог',
+                    'title' => 'Лог'
                 ]
             );
         }
@@ -150,6 +156,7 @@ class AdminController extends Controller
         if ($current_user->can('manageCourseModule', CourseModule::class)) {
             $template_data = $this->getTemplateData();
             $template_data['coursemodule'] = CourseModule::find($module_id);
+            if (!$template_data['coursemodule']) abort(404, 'Модуль не найден');
             return view('admin.modulepage', $template_data);
         } else {
             abort(403);
@@ -162,6 +169,10 @@ class AdminController extends Controller
         if ($current_user->can('manageModuleLesson', ModuleLesson::class)) {
             $template_data = $this->getTemplateData();
             $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
+
+            if (!$template_data['modulelesson']) {
+                abort('404', 'Занятие не найдено ((( ');
+            }
             $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
             $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
             $template_data['all_files'] = Storage::allFiles('lessons/' . $lesson_id);
@@ -197,7 +208,12 @@ class AdminController extends Controller
         return view('admin.userPage', $template_data);
     }
 
-
+    public function pageLog(Request $request)
+    {
+        $template_data = $this->getTemplateData();
+        $template_data['log'] = Log::orderBy('log_id', 'DESC')->paginate('50')->all();
+        return view('admin.log', $template_data);
+    }
 
     public function makeDefaultPermissions()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LessonUserAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
 
 class LessonUserAnswerController extends Controller
 {
@@ -28,6 +29,12 @@ class LessonUserAnswerController extends Controller
         }
         $userAnswer->answer_text = $request->input('answer_text');
         $userAnswer->save();
+
+        Log::create([
+            'log_message' => 'Ответ ученика ' .
+                Auth::user()->name . ' (' . Auth::user()->id . ')'
+                . ' на задание урока ' . $userAnswer->lesson_id
+        ]);
         return back();
     }
 
@@ -51,6 +58,12 @@ class LessonUserAnswerController extends Controller
         }
         $userAnswer->answer_quiz = json_encode($request->input('answers'), JSON_UNESCAPED_UNICODE);
         $userAnswer->save();
+
+        Log::create([
+            'log_message' => 'Ответ ученика ' .
+                Auth::user()->name . ' (' . Auth::user()->id . ')'
+                . ' на квиз урока ' . $userAnswer->lesson_id
+        ]);
         return back();
     }
 }

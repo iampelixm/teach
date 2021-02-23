@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserAccessController;
 use App\Models\LessonUserAnswer;
 use App\Http\Controllers\LessonUserAnswerController;
+use App\Http\Controllers\LogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,8 @@ Route::post('/admin/lessons/update', [ModuleLessonController::class, 'updateModu
 Route::post('/admin/lessons/delete', [ModuleLessonController::class, 'deleteModuleLesson']);
 
 Route::post('/admin/lessons/upload', [ModuleLessonController::class, 'uploadFiles']);
+
+Route::get('/admin/log', [AdminController::class, 'pageLog']);
 
 Route::get('/', [WebController::class, 'index']);
 

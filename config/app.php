@@ -182,6 +182,9 @@ return [
         //DEBUG
         Barryvdh\Debugbar\ServiceProvider::class,
 
+        //FFMPEG
+        ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
+
     ],
 
     /*
@@ -235,6 +238,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Bouncer' => Silber\Bouncer\BouncerFacade::class,
         'DebugBar' => Barryvdh\Debugbar\ServiceProvider::class,
+        'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class,
     ],
 
 ];

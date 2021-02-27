@@ -12,17 +12,38 @@
             /
             {{ $modulelesson->lesson_caption }}
             <h1 class="title text-center my-4">
-                Занятие {{ $modulelesson->lesson_caption }}
+                Урок {{ $modulelesson->lesson_caption }}
             </h1>
-
+            <div class="text-right">
+                <a class="btn btn-info" href="{{ route('web.lesson', ['lesson_id' => $modulelesson->lesson_id]) }}">
+                    Смотреть
+                </a>
+            </div>
             <h3 class="title mt-4">Видео материалы</h3>
             <div id="lesson_videos">
 
                 @foreach ($videos as $file_i => $file)
                     <div class="border mt-1">
-                        <a class="btn btn-outline-danger btn-sm"
-                            href="/admin/lessons/deletefile?file={{ $file }}">X</a>
+                        <a class="btn btn-outline-danger" href="/admin/lessons/deletefile?file={{ $file }}">X</a>
+                        <button class="btn btn-outline-success" data-role="dialog" data-dialog="videoplayer"
+                            data-data='{"video":"{{ Storage::url($file) }}"}'> &#9658;</button>
+
+                        <button class="btn btn-outline-warning" data-toggle="collapse" href="#{{ Str::slug($file, '_') }}"
+                            role="button" aria-expanded="false"
+                            aria-controls="{{ Str::slug($file, '_') }}">Обрезать</button>
                         {{ collect(explode('/', $file))->last() }}
+                        длит.: {{ FFMpeg::open($file)->getDurationInSeconds() }} сек.
+                        <div class="collapse" id="{{ Str::slug($file, '_') }}">
+
+                            <x-form class="form-inline" action="{{ route('admin.video.trim') }}">
+                                <x-form-input type="hidden" name="video" value="{{ $file }}" />
+                                <x-form-input value="0" min="0" step=".01" type="number" name="start"
+                                    label="От начала (секунд)" />
+                                <x-form-input value="0" min="0" step=".01" type="number" name="end"
+                                    label="От конца (секунд)" />
+                                <x-form-submit>Обрезать</x-form-submit>
+                            </x-form>
+                        </div>
                     </div>
                 @endforeach
                 <x-form action="/admin/lessons/upload" enctype="multipart/form-data">

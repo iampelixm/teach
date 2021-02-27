@@ -41,7 +41,7 @@
     @section('footer')
     @show
     <!-- Scripts -->
-    <script id="app" src="{{ asset('js/app.js') }}" defer></script>
+    <script id="app" src="{{ mix('js/app.js') }}" defer></script>
     <script>
         appjs = document.getElementById('app');
         csrftoken = "{{ csrf_token() }}";

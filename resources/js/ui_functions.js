@@ -4,11 +4,15 @@ function createModalDialog(data) {
         dialog = modal_template.yesno(data);
     } else if (data.dialog == 'yesnocancel') {
 
-    } else {
+    } else if (data.dialog == 'videoplayer') {
+        console.log(data);
+        dialog = modal_template.videoplayer(data);
+    }
+    else {
         dialog = modal_template.yesno(data);
     }
     dialog = $(dialog).appendTo('body').modal('show')
-        .on('hidden.bs.modal', function() {
+        .on('hidden.bs.modal', function () {
             $(this).remove();
         });
 
@@ -20,7 +24,7 @@ function createModalDialog(data) {
                 console.log('action click');
                 $.post(data.href,
                     data.data,
-                    function(resp) {
+                    function (resp) {
                         alert(resp);
                         $(dialog).modal('hide');
                     });
@@ -33,5 +37,5 @@ function createModalDialog(data) {
 }
 
 $('[data-role=dialog]').on('click', function () {
-    createModalDialog($(this).data());    
+    createModalDialog($(this).data());
 })

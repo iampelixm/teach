@@ -32,7 +32,7 @@
                             role="button" aria-expanded="false"
                             aria-controls="{{ Str::slug($file, '_') }}">Обрезать</button>
                         {{ collect(explode('/', $file))->last() }}
-                        длит.: {{ FFMpeg::open($file)->getDurationInSeconds() }} сек.
+                        {{-- длит.: {{ FFMpeg::open($file)->getDurationInSeconds() }} сек. --}}
                         <div class="collapse" id="{{ Str::slug($file, '_') }}">
 
                             <x-form class="form-inline" action="{{ route('admin.video.trim') }}">

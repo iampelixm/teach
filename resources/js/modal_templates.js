@@ -23,7 +23,7 @@ modal_template.yesno = function (data) {
             </div>
             </div>
         </div>
-        </div>    
+        </div>
     `;
 };
 
@@ -42,7 +42,7 @@ modal_template.videoplayer = function (data) {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <video id="modal_video_player" controls style="width: 100%" class="vpl" playsinline>
+                    <video id="modal_video_player" controls style="width: 100%" class="video-js" playsinline>
                         <source src="${data.data.video}" type="video/mp4">
                     </video>
                 </div>
@@ -51,6 +51,9 @@ modal_template.videoplayer = function (data) {
                 </div>
                 </div>
             </div>
-        </div>    
+        </div>
+        <script>
+        var plr=videojs('modal_video_player');
+        </script>
     `;
-}; 
+};

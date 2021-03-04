@@ -45,7 +45,7 @@ class AdminController extends Controller
         $nav = [];
         $user = Auth::user();
 
-        if ($user->isAn('su', 'coursemanager, teacher')) {
+        if ($user->isAn('su', 'coursemanager', 'teacher')) {
             array_push(
                 $nav,
                 [
@@ -56,6 +56,16 @@ class AdminController extends Controller
             );
         }
 
+        if ($user->isAn('su', 'teacher')) {
+            array_push(
+                $nav,
+                [
+                    'link' => route('admin.studyprocess'),
+                    'caption' => 'Учебный процесс',
+                    'title' => 'Учебный процесс'
+                ]
+            );
+        }
 
         if ($user->isA('su', 'coursemanager')) {
             array_push(
@@ -80,6 +90,11 @@ class AdminController extends Controller
                             'link' => '/admin/user',
                             'caption' => 'Пользователи',
                             'title' => 'Пользователи',
+                        ],
+                        [
+                            'link' => '/admin/user/new',
+                            'caption' => 'Создать',
+                            'title' => 'Создать',
                         ],
                         [
                             'link' => '/admin/roles',
@@ -114,6 +129,20 @@ class AdminController extends Controller
     public function index()
     {
         return view('admin.index', $this->getTemplateData());
+    }
+
+    public function pageStudyProcess(Request $request)
+    {
+        if ($request->query('course_id')) {
+            $courses = Course::find($request->query('course_id'));
+        } else {
+            $courses = Course::all();
+        }
+        $template_data = $this->getTemplateData();
+
+        $template_data['courses'] = $courses;
+        $template_data['students'] = User::whereIs('student')->get();
+        return view('admin.studyprocess', $template_data);
     }
 
     public function pageNewCourse()
@@ -206,6 +235,16 @@ class AdminController extends Controller
         $template_data['roles'] = Role::all();
         $template_data['courses'] = Course::where('is_access_listed', 1)->get();
         return view('admin.userPage', $template_data);
+    }
+
+    public function pageAddUser()
+    {
+        $current_user = BouncerFacade::create(Auth::user());
+        if (!$current_user->can('manageUser', User::class)) abort(403);
+
+        $template_data = $this->getTemplateData();
+        $template_data['page_title'] = 'Управление пользователем';
+        return view('admin.userAdd', $template_data);
     }
 
     public function pageLog(Request $request)

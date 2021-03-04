@@ -22,7 +22,7 @@
                     data-href="/admin/courses/delete" data-action="ajax"
                     data-data='{"course_id": "{{ $course->course_id }}"}' data-title="Удалить курс?"
                     data-message="Точно удалить этот курс? Это действие необратимо."
-                    data-success="function(){alert('ya');}">
+                    data-success="">
                     Удалить
                 </button>
             </div>

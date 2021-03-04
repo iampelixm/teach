@@ -36,7 +36,7 @@
             @if (!collect($coursemodule->lessons)->isEmpty())
                 @component('component.table', [
                     'items' => $coursemodule->lessons,
-                    'captions' => ['lesson_caption' => 'Занятие', 'lesson_presc' => 'Описание'],
+                    'captions' => ['lesson_order' => 'Порядок', 'lesson_caption' => 'Занятие', 'lesson_presc' => 'Описание'],
                     'link' => '/admin/lessons/',
                     'link_item_key' => 'lesson_id',
                     ])
@@ -50,3 +50,38 @@
         </div>
     </main>
 @endsection
+
+@push('javascript')
+    <script>
+        appjs.addEventListener('load', function(e) {
+            $("tbody").sortable({
+                items: "> tr",
+                appendTo: "parent",
+                helper: "clone",
+                update: function(event, ui) {
+                    var order = [];
+                    $(this).find('tr').each(function(i, el) {
+                        order.push({
+                            "lesson_id": $(el).data('id')
+                        });
+                    });
+                    console.log(order);
+                    $.post(
+                        '{{ route('admin.modules.setLessonOrder') }}', {
+                            '_token': '{{ csrf_token() }}',
+                            'module_id': {{ $coursemodule->module_id }},
+                            'order': order
+                        },
+                        function(response) {
+                            console.log(response);
+                        }
+                    ).
+                    fail(function(response) {
+                        console.log('fail');
+                    })
+                }
+            });
+        }, false);
+
+    </script>
+@endpush

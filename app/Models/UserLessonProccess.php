@@ -9,4 +9,5 @@ class UserLessonProccess extends Model
 {
     use HasFactory;
     public $fillable = ['user_id', 'lesson_id'];
+    protected $primaryKey = null;
 }

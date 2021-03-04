@@ -63,5 +63,8 @@ class User extends Authenticatable
         return $this->hasManyThrough(ModuleLesson::class, LessonUser::class, 'user_id', 'lesson_id', 'id', 'lesson_id');
     }
 
-    
+    public function hasLessonAccess($lesson_id = 0)
+    {
+        return $this->hasOne(LessonUser::class, 'user_id', 'id')->where(['lesson_id' => $lesson_id]);
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseModuleController;
 use App\Http\Controllers\FilesController;
@@ -33,27 +34,30 @@ Route::get('/tech/buildPermissions', [AdminController::class, 'makeDefaultPermis
 
 Route::prefix('/admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'pageListCourses'])
-        ->name('homme');
+        ->name('home');
 
-    Route::get('/user', [AdminController::class, 'pageUserList'])
-        ->name('user');
+    Route::get('/study', [AdminController::class, 'pageStudyProcess'])->name('studyprocess');
 
-    Route::get('/user/new', [AdminController::class, 'pageAddUser'])
-        ->name('user.new');
-
-    Route::post('/user/updateLessonAccess', [UserAccessController::class, 'updateLessonAccess'])
-        ->name('user.updatelessonaccess');
-
-    Route::post('/user/addLessonAccess', [UserAccessController::class, 'addLessonAccess'])
-        ->name('user.addlessonaccess');
-
-    Route::get('/user/{user_id}', [AdminController::class, 'pageUser'])
-        ->name('user.userpage');
-
-    Route::post('/user/add', [UserAccessController::class, 'pageAddUser']);
-    Route::post('/user/update', [UserAccessController::class, 'updateUser']);
-    Route::post('/user/disable', [UserAccessController::class, 'pageAddUser']);
-    Route::post('/user/delete', [UserAccessController::class, 'pageAddUser']);
+    Route::name('user.')->group(function () {
+        Route::get('/user', [AdminController::class, 'pageUserList'])
+            ->name('list');
+        Route::get('/user/new', [AdminController::class, 'pageAddUser'])
+            ->name('new');
+        Route::post('/user/updateLessonAccess', [UserAccessController::class, 'updateLessonAccess'])
+            ->name('updatelessonaccess');
+        Route::post('/user/addLessonAccess', [UserAccessController::class, 'addLessonAccess'])
+            ->name('addlessonaccess');
+        Route::post('/user/add', [UserAccessController::class, 'addUser'])
+            ->name('add');
+        Route::post('/user/update', [UserAccessController::class, 'updateUser'])
+            ->name('update');
+        Route::post('/user/disable', [UserAccessController::class, 'updateUser'])
+            ->name('disable');
+        Route::post('/user/delete', [UserAccessController::class, 'deleteUser'])
+            ->name('delete');
+        Route::get('/user/{user_id}', [AdminController::class, 'pageUser'])
+            ->name('userpage');
+    });
 
     Route::get('/courses', [AdminController::class, 'pageListCourses']);
     Route::get('/courses/new', [AdminController::class, 'pageNewCourse']);
@@ -63,13 +67,18 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     Route::post('/courses/update', [CourseController::class, 'updateCourse']);
     Route::post('/courses/delete', [CourseController::class, 'deleteCourse']);
 
-
-    Route::get('/modules/{module_id}', [AdminController::class, 'pageModule']);
-
-    Route::post('/modules/add', [CourseModuleController::class, 'addCourseModule']);
-    Route::post('/modules/update', [CourseModuleController::class, 'updateCourseModule']);
-    Route::post('/modules/delete', [CourseModuleController::class, 'deleteCourseModule']);
-
+    Route::name('modules.')->group(function () {
+        Route::get('/modules/{module_id}', [AdminController::class, 'pageModule'])
+            ->name('modulePage');
+        Route::post('/modules/add', [CourseModuleController::class, 'addCourseModule'])
+            ->name('add');
+        Route::post('/modules/update', [CourseModuleController::class, 'updateCourseModule'])
+            ->name('update');
+        Route::post('/modules/delete', [CourseModuleController::class, 'deleteCourseModule'])
+            ->name('delete');
+        Route::post('/modules/setLessonsOrder', [CourseModuleController::class, 'setLessonsOrder'])
+            ->name('setLessonOrder');
+    });
     Route::get('/lessons/deletefile', [ModuleLessonController::class, 'deleteFile']);
     Route::get('/lessons/{lesson_id}', [AdminController::class, 'pageLesson']);
 
@@ -89,22 +98,27 @@ Route::prefix('/')->name('web.')->group(
     function () {
 
         Route::get('/', [WebController::class, 'index']);
+        Route::get('home', [WebController::class, 'index']);
 
         Route::get('/course/{course_id}', [WebController::class, 'pageCourse']);
-        Route::get('/module/{module_id}', [WebController::class, 'pageModule']);
-        Route::get('/lesson/{lesson_id}', [WebController::class, 'pageLesson'])->name('lesson');
 
-        Route::get('/lessontask/{lesson_id}', [WebController::class, 'pageLessonTask']);
+        Route::name('module.')->group(function () {
+            Route::get('/module/{module_id}', [WebController::class, 'pageModule']);
+            Route::get('/module/{module_id}/end', [WebController::class, 'pageModuleEnd'])->name('endPage');
+        });
+        Route::get('/lesson/{lesson_id}/done', [WebController::class, 'checkDoneLesson'])->name('lesson.done');
+        Route::get('/lesson/{lesson_id}', [WebController::class, 'pageLesson'])->name('lessonPage');
+
+
+        Route::get('/lessontask/{lesson_id}', [WebController::class, 'pageLessonTask'])->name('lessonTask');
         Route::post('/userlessonanswer', [LessonUserAnswerController::class, 'saveUserAnswer']);
         Route::post('/userlessonquiz', [LessonUserAnswerController::class, 'saveUserQuiz']);
 
-        Route::get('/lessonquiz/{lesson_id}', [WebController::class, 'pageLessonQuiz']);
+        Route::get('/lessonquiz/{lesson_id}', [WebController::class, 'pageLessonQuiz'])->name('lessonQuiz');
 
         Route::get('/file/get', [FilesController::class, 'getFile']);
         Route::get('/file/download', [FilesController::class, 'downloadFile']);
 
         Route::get('/storage/{file_path}', [FilesController::class, 'storageWrapper']);
-
-        Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     }
 );

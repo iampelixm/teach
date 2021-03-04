@@ -33,8 +33,18 @@
     @show
     @section('hero')
     @show
+
+    @if ($errors->all())
+        <div class="container">
+            @foreach ($errors->all() as $error)
+                <div class="alert alert-warning">{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
     @section('content')
         <div class="container">
+
+
             {!! $page_content ?? '' !!}
         </div>
     @show

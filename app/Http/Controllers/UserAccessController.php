@@ -12,6 +12,7 @@ use Silber\Bouncer\BouncerFacade;
 use Illuminate\Support\Facades\Hash;
 use Silber\Bouncer\Database\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
 
 class UserAccessController extends Controller
 {
@@ -52,6 +53,44 @@ class UserAccessController extends Controller
         return redirect()->action(
             [AdminController::class, 'pageUser'],
             ['user_id' => $user_id]
+        );
+    }
+
+    public function addUser(Request $request)
+    {
+        if (!BouncerFacade::create(Auth::user())->can('manageUser', User::class)) abort(403, 'Вы не можете изменять данные пользователей');
+
+        $userModel = new User;
+
+        $record_fields = Schema::getColumnListing('users');
+        foreach ($record_fields as $field) {
+            if (!empty($request->input($field))) {
+                $userModel->$field = $request->input($field);
+            }
+        }
+
+        if (!empty($request->input('password'))) {
+
+            $userModel->password = Hash::make($request->input('password'));
+            $userModel->save();
+        }
+
+        if (!empty($request->input('roles'))) {
+            $allRoles = Role::all();
+            $recievedRoles = $request->input('roles');
+
+            foreach ($allRoles as $role) {
+                if (in_array($role->name, $recievedRoles)) {
+                    $userModel->assign($role->name);
+                } else {
+                    $userModel->retract($role->name);
+                }
+            }
+        }
+
+        return redirect()->action(
+            [AdminController::class, 'pageUser'],
+            ['user_id' => $userModel->id]
         );
     }
 

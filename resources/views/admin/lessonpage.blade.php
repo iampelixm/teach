@@ -15,7 +15,7 @@
                 Урок {{ $modulelesson->lesson_caption }}
             </h1>
             <div class="text-right">
-                <a class="btn btn-info" href="{{ route('web.lesson', ['lesson_id' => $modulelesson->lesson_id]) }}">
+                <a class="btn btn-info" href="{{ route('web.lessonPage', ['lesson_id' => $modulelesson->lesson_id]) }}">
                     Смотреть
                 </a>
             </div>
@@ -79,8 +79,7 @@
                 <button class="btn btn-danger ajaxyesno" data-role="dialog" data-requesttype="post" data-dialog="yesno"
                     data-href="/admin/lessons/delete" data-action="ajax"
                     data-data='{"lesson_id": "{{ $modulelesson->lesson_id }}"}' data-title="Удалить урок?"
-                    data-message="Точно удалить это занятие? Это действие необратимо."
-                    data-success="function(){alert('ya');}">
+                    data-message="Точно удалить это занятие? Это действие необратимо." data-success="">
                     Удалить
                 </button>
             </div>
@@ -93,14 +92,23 @@
                 <button class="btn btn-info"
                     onclick="saveQuiz('#quiz_builder_container', '/admin/lessons/update');">Сохранить</button>
                 <button class="btn btn-warning"
-                    onclick="buildQuiz(buildQuizData('#quiz_builder_container'), '#quiz_out',)">Смотреть</button>
+                    onclick="buildQuiz('#quiz_out', buildQuizData('#quiz_builder_container'))">Смотреть</button>
             </div>
+            <div id="quiz_out"></div>
+
             <button class="btn btn-success" data-toggle="collapse" data-target="#quiz_builder_wrapper" aria-expanded="false"
                 aria-controls="quiz_builder_wrapper"
                 onclick="$(this).hide(); quizBuilderLoadQuiz('#quiz_builder_container', {{ $modulelesson->lesson_quiz ?? '' }});">Загрузить
                 квиз
             </button>
-            <div id="quiz_out"></div>
+            @if ($modulelesson->lesson_quiz)
+                <button class="btn btn-danger ajaxyesno" data-role="dialog" data-requesttype="post" data-dialog="yesno"
+                    data-href="/admin/lessons/update" data-action="ajax"
+                    data-data='{"lesson_id": "{{ $modulelesson->lesson_id }}", "lesson_quiz": ""}'
+                    data-title="Удалить квиз?" data-message="Квиз делать долго, точно нужно удалить?" data-success="">
+                    Удалить
+                </button>
+            @endif
         </div>
     </main>
 @endsection

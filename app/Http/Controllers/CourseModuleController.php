@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CourseModule;
+use App\Models\ModuleLesson;
 use Illuminate\Http\Request;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
@@ -122,5 +123,22 @@ class CourseModuleController extends Controller
         } else {
             return 'not found';
         }
+    }
+
+    public function setLessonsOrder(Request $request)
+    {
+        $valid = $request->validate(['module_id' => 'required']);
+        if (!$valid) return back();
+        $CourseModule = CourseModule::find($request->input('module_id'));
+
+        if (!$CourseModule) abort(404);
+        $order = $request->input('order');
+        if (!is_array($order)) abort('403');
+        //return ModuleLesson::where(['module_id' => $CourseModule->module_id, 'lesson_id' => $order_item['lesson_id']])::get()->toArray();
+        foreach ($order as $order_i => $order_item) {
+            ModuleLesson::where(['module_id' => $CourseModule->module_id, 'lesson_id' => $order_item['lesson_id']])
+                ->update(['lesson_order' => $order_i]);
+        }
+        return 'ok';
     }
 }

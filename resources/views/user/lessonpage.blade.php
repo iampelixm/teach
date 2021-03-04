@@ -1,4 +1,4 @@
-@extends('layout.admin')
+@extends('layout.user')
 
 @push('css')
     <link href="/css/plyr.css" rel="stylesheet">
@@ -18,7 +18,7 @@
             @if (!collect($videos)->isEmpty())
                 <div id="lesson_videos">
                     @foreach ($videos as $file_i => $file)
-                        <video class="video-js" data-setup='{}' controls style="width: 100%" playsinline>
+                        <video class="video-js vjs-fluid vjs-fill" data-setup='{}' controls style="width: 100%" playsinline>
                             <source src="{{ Storage::url($file) }}" type="{{ Storage::mimeType($file) }}">
                         </video>
                     @endforeach
@@ -38,12 +38,22 @@
                     @endforeach
                 </div>
             @endif
+
             @if ($modulelesson->lesson_task)
                 <a class="btn btn-info" href="/lessontask/{{ $modulelesson->lesson_id }}">Перейти к заданию</a>
             @endif
             @if ($modulelesson->lesson_quiz)
                 <a class="btn btn-info" href="/lessonquiz/{{ $modulelesson->lesson_id }}">Перейти к тесту</a>
             @endif
+            <a class="btn btn-success"
+                href="{{ route('web.lesson.done', ['lesson_id' => $modulelesson->lesson_id]) }}">Завершить урок</a>
+
+            @if ($next_lesson)
+                <a class="btn btn-outline-success" href="{{ route('web.lessonPage', $next_lesson->lesson_id) }}">
+                    Далее: {{ $next_lesson->lesson_caption }}
+                </a>
+            @endif
+
         </div>
     </main>
 @endsection

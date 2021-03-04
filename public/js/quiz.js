@@ -119,6 +119,8 @@ function buildQuiz(container = '#quiz_container', quizdata) {
         `;
     }
 
+    console.log('quizadata');
+    console.log(quizdata);
 
     $(quiz_skeleton).appendTo(quiz);
     var questions_container = $(quiz).find('.questions_container');

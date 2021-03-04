@@ -21,7 +21,7 @@ class CourseModule extends Model
 
     public function lessons()
     {
-        return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id');
+        return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')->orderBy('lesson_order');
     }
 
     public function availableLessons()
@@ -32,9 +32,41 @@ class CourseModule extends Model
             //TODO - разберись уже с этими блядскими отношениями
             return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
                 ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id))
-                ->orderBy('lesson_id');
+                ->orderBy('lesson_order');
         } else {
-            return $this->hasMany(ModuleLesson::class, 'module_id');
+            return $this->hasMany(ModuleLesson::class, 'module_id')->orderBy('lesson_order');
+        }
+    }
+
+    public function doneLessons()
+    {
+        $user = Auth::user();
+
+        if ($this->course->is_access_listed) {
+
+            return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
+                ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id))
+                ->whereIn('lesson_id', UserLessonProccess::select(['lesson_id'])
+                    ->where(['user_id' => $user->id, 'lesson_id' => $this->lesson_id, 'lesson_status' => 'done']))
+                ->orderBy('lesson_order');
+        } else {
+            return $this->hasMany(ModuleLesson::class, 'module_id')->orderBy('lesson_order');
+        }
+    }
+
+    public function notDoneLessons()
+    {
+        $user = Auth::user();
+
+        if ($this->course->is_access_listed) {
+
+            return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
+                ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id))
+                ->whereNotIn('lesson_id', UserLessonProccess::select(['lesson_id'])
+                    ->where(['user_id' => $user->id, 'lesson_id' => $this->lesson_id, 'lesson_status' => 'done']))
+                ->orderBy('lesson_order');
+        } else {
+            return $this->hasMany(ModuleLesson::class, 'module_id')->orderBy('lesson_order');
         }
     }
 }

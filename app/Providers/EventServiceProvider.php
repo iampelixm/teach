@@ -6,6 +6,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Models\Log;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,18 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            Log::create([
+                'log_message' => 'Авторизация пользователя' .
+                    $event->user->name  . ' (' . $event->user->email . ')'
+            ]);
+        });
+
+        Event::listen(\Illuminate\Auth\Events\Logout::class, function ($event) {
+            Log::create([
+                'log_message' => 'Выход пользователя' .
+                    $event->user->name  . ' (' . $event->user->email . ')'
+            ]);
+        });
     }
 }

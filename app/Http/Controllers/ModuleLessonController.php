@@ -157,8 +157,8 @@ class ModuleLessonController extends Controller
         $answered = json_decode($answer->answer_quiz);
 
         $result = [];
-        $result['total_answers'] = 0;
-        $result['correct_answers'] = 0;
+        $result['total_answers'] = 1;
+        $result['correct_answers'] = 1;
         foreach ($quiz as $question_i => $question) {
             $question_answer = $answered[$question_i];
             //Считаем правильные ответы в вопросе только если таковые указаны
@@ -170,7 +170,7 @@ class ModuleLessonController extends Controller
                     //echo "<BR> CHECKING ANSWER $answer_value->value";
                     $correct_aswer = array_search('yes', $question->answer_correct);
                     $answer_question_index = array_search($answer_value->value, $question->answer_variant);
-                    echo "<br>ANSWER INDEX: $answer_question_index OF VALUE $answer_value->value WHERE CORRECT IS $correct_aswer";
+                    //echo "<br>ANSWER INDEX: $answer_question_index OF VALUE $answer_value->value WHERE CORRECT IS $correct_aswer";
                     if ($correct_aswer == $answer_question_index) {
                         $result['correct_answers']++;
                     }

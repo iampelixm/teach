@@ -37,7 +37,7 @@ if (!empty($captions)) {
     unset($buf_arr);
 }
 @endphp
-<table class="table table-striped table-hover table-responsive-md sortable">
+<table class="table data-table table-striped table-hover table-responsive-md sortable">
     <thead>
         @foreach ($header as $header_item_key => $header_item_value)
             <th scope="col">{{ $header_item_key }}</th>

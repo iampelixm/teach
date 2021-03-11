@@ -11,7 +11,7 @@ use App\Models\CourseModuleUser;
 use App\Models\CourseUser;
 use App\Models\LessonUserAnswer;
 use App\Models\Log;
-
+use App\Models\UserLessonProccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,17 +44,30 @@ class AdminController extends Controller
     {
         $nav = [];
         $user = Auth::user();
-
+        $menu_courses = [
+            'link' => '#',
+            'caption' => 'Курсы',
+            'title' => 'Курсы',
+            'childrens' => []
+        ];
         if ($user->isAn('su', 'coursemanager', 'teacher')) {
-            array_push(
-                $nav,
+            $menu_courses['childrens'][] =
                 [
                     'link' => '/admin/courses',
-                    'caption' => 'Курсы',
-                    'title' => 'Курсы'
-                ]
-            );
+                    'caption' => 'Все',
+                    'title' => 'Все',
+                ];
         }
+
+        if ($user->isA('su', 'coursemanager')) {
+            $menu_courses['childrens'][] =
+                [
+                    'link' => '/admin/courses/new',
+                    'caption' => 'Добавить курс',
+                    'title' => 'Добавить курс'
+                ];
+        }
+        array_push($nav, $menu_courses);
 
         if ($user->isAn('su', 'teacher')) {
             array_push(
@@ -67,16 +80,6 @@ class AdminController extends Controller
             );
         }
 
-        if ($user->isA('su', 'coursemanager')) {
-            array_push(
-                $nav,
-                [
-                    'link' => '/admin/courses/new',
-                    'caption' => 'Добавить курс',
-                    'title' => 'Добавить курс'
-                ]
-            );
-        }
 
         if ($user->isAn('su', 'admin')) {
             array_push(
@@ -133,15 +136,30 @@ class AdminController extends Controller
 
     public function pageStudyProcess(Request $request)
     {
+        $courses = new Course();
+        $modules = new CourseModule();
+        $lessons = new ModuleLesson();
+        $user_answers = new LessonUserAnswer();
+        $students = new User();
         if ($request->query('course_id')) {
-            $courses = Course::find($request->query('course_id'));
-        } else {
-            $courses = Course::all();
+            #$courses = $courses->where('course_id', $request->query('course_id'));
+            #$modules = $modules->where('course_id', $request->query('course_id'));
         }
+
+        if ($request->query('module_id')) {
+            #$modules = $modules->where('module_id', $request->query('module_id'));
+            #$courses = $courses->where('course_id', $modules->first()->course->course_id ?? '*');
+        }
+
+        $lessons = $lessons::whereIn('module_id', $modules->pluck('module_id')->toArray());
+
         $template_data = $this->getTemplateData();
 
-        $template_data['courses'] = $courses;
-        $template_data['students'] = User::whereIs('student')->get();
+        $template_data['courses'] = $courses->get();
+        $template_data['modules'] = $modules->get();
+        $template_data['lessons'] = $lessons->get();
+        $template_data['user_answers'] = $user_answers->get();
+        $template_data['students'] = $students->get();
         return view('admin.studyprocess', $template_data);
     }
 
@@ -250,7 +268,7 @@ class AdminController extends Controller
     public function pageLog(Request $request)
     {
         $template_data = $this->getTemplateData();
-        $template_data['log'] = Log::orderBy('log_id', 'DESC')->paginate('50')->all();
+        $template_data['log'] = Log::orderBy('log_id', 'DESC')->paginate('300')->all();
         return view('admin.log', $template_data);
     }
 

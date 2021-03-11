@@ -36,6 +36,7 @@
             @if (!collect($coursemodule->lessons)->isEmpty())
                 @component('component.table', [
                     'items' => $coursemodule->lessons,
+                    'show_fields' => ['lesson_order', 'lesson_caption'],
                     'captions' => ['lesson_order' => 'Порядок', 'lesson_caption' => 'Занятие', 'lesson_presc' => 'Описание'],
                     'link' => '/admin/lessons/',
                     'link_item_key' => 'lesson_id',

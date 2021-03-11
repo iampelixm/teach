@@ -111,6 +111,10 @@
 
 /*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
 
+/*! DataTables 1.10.24
+ * ©2008-2021 SpryMedia Ltd - datatables.net/license
+ */
+
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /**

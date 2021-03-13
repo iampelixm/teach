@@ -185,6 +185,8 @@ return [
         //FFMPEG
         ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
 
+        Telegram\Bot\Laravel\TelegramServiceProvider::class,
+
     ],
 
     /*
@@ -239,6 +241,8 @@ return [
         'Bouncer' => Silber\Bouncer\BouncerFacade::class,
         'DebugBar' => Barryvdh\Debugbar\ServiceProvider::class,
         'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class,
+
+        'Telegram'  => Telegram\Bot\Laravel\Facades\Telegram::class,
     ],
 
 ];

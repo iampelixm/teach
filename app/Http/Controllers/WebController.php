@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\User;
 use App\Models\LessonUser;
 use App\Models\Log;
+use Illuminate\Support\Facades\Hash;
 
 class WebController extends Controller
 {
@@ -185,5 +186,34 @@ class WebController extends Controller
         $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
         return view('user.lessonquizpage', $template_data);
+    }
+
+    public function userProfile()
+    {
+        $user = Auth::user();
+        $template_data = $this->getTemplateData();
+        $template_data['user'] = $user;
+        return view('user.profile', $template_data);
+    }
+
+    public function userProfileUpdate(Request $request)
+    {
+        $valid = $request->validate([
+            'name' => 'string|min:3',
+            'id' => 'integer',
+            'password' => 'nullable|string|min:4'
+        ]);
+
+        if (!$valid) return back()->withInput();
+
+        $user = User::find($request->id);
+        if (!$user) abort('404');
+        $user->name = $request->name;
+
+        if ($request->password) {
+            $user->password = Hash::make($request->input('password'));
+        }
+        $user->save();
+        return redirect(route('web.profile'));
     }
 }

@@ -15,6 +15,7 @@ use App\Models\LessonUserAnswer;
 use App\Http\Controllers\LessonUserAnswerController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\VideoController;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,22 @@ use App\Http\Controllers\VideoController;
 Auth::routes();
 
 Route::get('/tech/buildPermissions', [AdminController::class, 'makeDefaultPermissions']);
+
+Route::get('/bot/me', function () {
+    // echo '/' . config()->telegram;
+    //dd(config('telegram')['bots'][config('telegram')['default']]['token']);
+    $me = Telegram::getMe();
+    dd($me);
+});
+
+Route::get('/bot/registerWebhook', function () {
+    $params = [
+        'url' => route('api.bot.webhook', config('telegram')['bots'][config('telegram')['default']]['token'])
+    ];
+    $me = Telegram::setWebhook($params);
+    dd($me);
+});
+
 
 Route::prefix('/admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'pageListCourses'])
@@ -91,6 +108,8 @@ Route::prefix('/admin')->name('admin.')->group(function () {
 
     Route::get('/log', [AdminController::class, 'pageLog']);
 
+
+
     Route::post('/video/trim', [VideoController::class, 'trim'])->name('video.trim');
 });
 
@@ -120,5 +139,8 @@ Route::prefix('/')->name('web.')->group(
         Route::get('/file/download', [FilesController::class, 'downloadFile']);
 
         Route::get('/storage/{file_path}', [FilesController::class, 'storageWrapper']);
+
+        Route::get('/profile', [WebController::class, 'userProfile'])->name('profile');
+        Route::post('/profile/update', [WebController::class, 'userProfileUpdate'])->name('profile.update');
     }
 );

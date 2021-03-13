@@ -1,7 +1,7 @@
 {
-    "update_id": 54070648,
-    "callback_query": {
-        "id": "1185645022652305359",
+    "update_id": 54070649,
+    "message": {
+        "message_id": 105,
         "from": {
             "id": 276054493,
             "is_bot": false,
@@ -9,38 +9,13 @@
             "username": "pelixm",
             "language_code": "ru"
         },
-        "message": {
-            "message_id": 103,
-            "from": {
-                "id": 1570739738,
-                "is_bot": true,
-                "first_name": "teach_portal_bot",
-                "username": "teach_portall_bot"
-            },
-            "chat": {
-                "id": 276054493,
-                "first_name": "Александр Семенов",
-                "username": "pelixm",
-                "type": "private"
-            },
-            "date": 1615574460,
-            "text": "Привет, Александр Семенов!\nКажется, мы с вами не знакомы.\nЯ бот портала обучения.\nЕсли у вас уже есть учетная запись - давайте ее проверим.\nА нет - так зарегистрируем!\nЧто будем делать?:",
-            "reply_markup": {
-                "inline_keyboard": [
-                    [
-                        {
-                            "text": "Войти",
-                            "callback_data": "action_login_process"
-                        },
-                        {
-                            "text": "Зарегистрироваться",
-                            "callback_data": "action_registration_process"
-                        }
-                    ]
-                ]
-            }
+        "chat": {
+            "id": 276054493,
+            "first_name": "Александр Семенов",
+            "username": "pelixm",
+            "type": "private"
         },
-        "chat_instance": "-6601166383914307839",
-        "data": "action_login_process"
+        "date": 1615633099,
+        "text": "nbvcxz"
     }
 }

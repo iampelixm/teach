@@ -14,6 +14,7 @@ use App\Http\Controllers\UserAccessController;
 use App\Models\LessonUserAnswer;
 use App\Http\Controllers\LessonUserAnswerController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\TelegramBotController;
 use App\Http\Controllers\VideoController;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
@@ -108,9 +109,9 @@ Route::prefix('/admin')->name('admin.')->group(function () {
 
     Route::get('/log', [AdminController::class, 'pageLog']);
 
-
-
     Route::post('/video/trim', [VideoController::class, 'trim'])->name('video.trim');
+
+    Route::resource('/telegram_bot', TelegramBotController::class); //->name('index', 'telegram_bot');
 });
 
 Route::prefix('/')->name('web.')->group(

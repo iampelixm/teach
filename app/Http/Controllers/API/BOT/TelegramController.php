@@ -57,7 +57,6 @@ class TelegramController extends BotController
 А нет - так зарегистрируем!
 Что будем делать?:',
             'reply_markup' => json_encode($keyboard)
-
         ]);
     }
 

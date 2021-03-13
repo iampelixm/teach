@@ -10,5 +10,24 @@
             </div>
 
             <div>Описание: {{ $bot->presc }}</div>
+            <h1 class="title">Цепочки</h1>
+            <div class="text-right"><a
+                    href="{{ route('admin.telegram_bot.conversation_chain.create', $bot) }}">Создать</a>
+                @if (!collect($bot->chains)->isEmpty())
+                    @component('component.table', [
+                        'items' => $bot->chains,
+                        'show_fields' => ['caption'],
+                        'captions' => ['caption' => 'Название'],
+                        'link' => route('admin.telegram_bot.show', $bot) . '/conversation_chain/',
+                        'link_item_key' => 'id',
+                        ])
+                    @endcomponent
+                @else
+                    @component('component.alert', ['type' => 'warning'])
+                        Цепочек еще нет.
+                        <a class="btn btn-success"
+                            href="{{ route('admin.telegram_bot.conversation_chain.create', $bot) }}">Создать</a>
+                    @endcomponent
+                @endif
     </main>
 @endsection

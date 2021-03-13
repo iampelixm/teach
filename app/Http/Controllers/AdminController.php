@@ -40,7 +40,7 @@ class AdminController extends Controller
         ]
     ];
 
-    public function buildNav()
+    static function buildNav()
     {
         $nav = [];
         $user = Auth::user();
@@ -116,10 +116,10 @@ class AdminController extends Controller
         return $nav;
     }
 
-    public function getTemplateData()
+    static function getTemplateData()
     {
         return [
-            'nav' => $this->buildNav(),
+            'nav' => AdminController::buildNav(),
             'page_title' => 'Портал обучения :: админ'
         ];
     }

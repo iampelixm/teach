@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class TelegramBot extends Model
 {
     use HasFactory;
+
+    public function chains()
+    {
+        return $this->hasMany(TelegramBotConversationChain::class, 'id', 'id');
+    }
+
+    public function conversations()
+    {
+        return $this->hasMany(TelegramBotConversation::class, 'bot_id','id');
+    }
 }

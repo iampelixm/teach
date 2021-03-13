@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\TelegramBot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use App\Http\Controllers\AdminController;
 
-class TelegramBotController extends AdminController
+class TelegramBotController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +16,7 @@ class TelegramBotController extends AdminController
      */
     public function index()
     {
-        $template_data = $this->getTemplateData();
+        $template_data = AdminController::getTemplateData();
         $template_data['bots'] = TelegramBot::all();
         return view('admin.telegram_bot.list', $template_data);
     }
@@ -27,7 +28,7 @@ class TelegramBotController extends AdminController
      */
     public function create()
     {
-        $template_data = $this->getTemplateData();
+        $template_data = AdminController::getTemplateData();
         return view('admin.telegram_bot.edit', $template_data);
     }
 
@@ -66,7 +67,7 @@ class TelegramBotController extends AdminController
      */
     public function show(TelegramBot $telegramBot)
     {
-        $template_data = $this->getTemplateData();
+        $template_data = AdminController::getTemplateData();
         $template_data['bot'] = $telegramBot;
         return view('admin.telegram_bot.page', $template_data);
     }
@@ -79,7 +80,7 @@ class TelegramBotController extends AdminController
      */
     public function edit(TelegramBot $telegramBot)
     {
-        $template_data = $this->getTemplateData();
+        $template_data = AdminController::getTemplateData();
         $template_data['bot'] = $telegramBot;
         return view('admin.telegram_bot.edit', $template_data);
     }

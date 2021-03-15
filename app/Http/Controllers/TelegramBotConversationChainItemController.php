@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 
 class TelegramBotConversationChainItemController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -65,7 +69,7 @@ class TelegramBotConversationChainItemController extends Controller
             $record->$field = $request->input($field);
         }
         $record->save();
-        return redirect(route('admin.telegram_bot.conversation_chain.chain_item.show', $record));
+        return redirect(route('admin.telegram_bot.conversation_chain.chain_item.show', [$record->chain->bot, $record->chain, $record]));
     }
 
     /**

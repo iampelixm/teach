@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Schema;
 
 class TelegramBotConversationChainController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -62,7 +66,7 @@ class TelegramBotConversationChainController extends Controller
             $record->$field = $request->input($field);
         }
         $record->save();
-        return redirect(route('admin.telegram_bot.conversation_chain.show', $record));
+        return redirect(route('admin.telegram_bot.conversation_chain.show', [$record->bot, $record]));
     }
 
     /**

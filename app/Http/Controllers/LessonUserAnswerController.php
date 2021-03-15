@@ -12,8 +12,13 @@ use App\Models\LessonUser;
 
 class LessonUserAnswerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function saveUserAnswer(Request $request)
     {
+
         $valid = $request->validate(
             [
                 'lesson_id' => 'required'

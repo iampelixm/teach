@@ -11,7 +11,7 @@ class TelegramBot extends Model
 
     public function chains()
     {
-        return $this->hasMany(TelegramBotConversationChain::class, 'id', 'id');
+        return $this->hasMany(TelegramBotConversationChain::class, 'bot_id', 'id');
     }
 
     public function conversations()

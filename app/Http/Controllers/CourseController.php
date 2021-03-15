@@ -16,6 +16,11 @@ class CourseController extends Controller
     course_presc
     */
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }    
+
     public function addCourse(Request $request)
     {
         $valid = $request->validate([

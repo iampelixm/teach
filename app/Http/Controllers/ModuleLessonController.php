@@ -11,6 +11,10 @@ use App\Models\LessonUserAnswer;
 
 class ModuleLessonController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function addModuleLesson(Request $request)
     {
         $valid = $request->validate([

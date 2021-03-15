@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserLessonProccess;
+use App\Models\TelegramBotCommandAction;
 use Illuminate\Http\Request;
 
-class UserLessonProccessController extends Controller
+class TelegramBotCommandActionController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -45,10 +41,10 @@ class UserLessonProccessController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\UserLessonProccess  $userLessonProccess
+     * @param  \App\Models\TelegramBotCommandAction  $telegramBotCommandAction
      * @return \Illuminate\Http\Response
      */
-    public function show(UserLessonProccess $userLessonProccess)
+    public function show(TelegramBotCommandAction $telegramBotCommandAction)
     {
         //
     }
@@ -56,10 +52,10 @@ class UserLessonProccessController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\UserLessonProccess  $userLessonProccess
+     * @param  \App\Models\TelegramBotCommandAction  $telegramBotCommandAction
      * @return \Illuminate\Http\Response
      */
-    public function edit(UserLessonProccess $userLessonProccess)
+    public function edit(TelegramBotCommandAction $telegramBotCommandAction)
     {
         //
     }
@@ -68,10 +64,10 @@ class UserLessonProccessController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\UserLessonProccess  $userLessonProccess
+     * @param  \App\Models\TelegramBotCommandAction  $telegramBotCommandAction
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, UserLessonProccess $userLessonProccess)
+    public function update(Request $request, TelegramBotCommandAction $telegramBotCommandAction)
     {
         //
     }
@@ -79,10 +75,10 @@ class UserLessonProccessController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\UserLessonProccess  $userLessonProccess
+     * @param  \App\Models\TelegramBotCommandAction  $telegramBotCommandAction
      * @return \Illuminate\Http\Response
      */
-    public function destroy(UserLessonProccess $userLessonProccess)
+    public function destroy(TelegramBotCommandAction $telegramBotCommandAction)
     {
         //
     }

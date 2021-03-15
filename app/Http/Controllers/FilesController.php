@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Storage;
 
 class FilesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function getFile(Request $request)
     {
         $file_path = $request->query('file');

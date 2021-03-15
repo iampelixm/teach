@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Schema;
 
 class UserAccessController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function updateUser(Request $request)
     {
         if (!BouncerFacade::create(Auth::user())->can('manageUser', User::class)) abort(403, 'Вы не можете изменять данные пользователей');

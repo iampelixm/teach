@@ -18,6 +18,10 @@ class CourseModuleController extends Controller
     module_presc
     module_quiz 
     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }    
 
     public function addCourseModule(Request $request)
     {

@@ -25,9 +25,12 @@ if (!isset($chain_item)) {
                 <x-form-input :bind="$chain_item" name="chain_id" type="hidden" value="{{ $chain->id }}" />
                 <x-form-input :bind="$chain_item" name="caption" label="Название звена" required aria-required="true" />
                 <x-form-textarea :bind="$chain_item" name="message" label="Сообщение пользователю" />
-                <x-form-input :bind="$chain_item" name="check_function" label="Функция проверки" required aria-required="true" />
-                <x-form-input :bind="$chain_item" name="true_function" label="Функция если проверка ОК" required aria-required="true" />
-                <x-form-input :bind="$chain_item" name="false_function" label="Функция если проверка НЕ ОК" required aria-required="true" />
+                <x-form-input :bind="$chain_item" name="check_function" label="Функция проверки" />
+                <x-form-input :bind="$chain_item" name="check_function_param" label="Параметр функции проверки" />
+                <x-form-input :bind="$chain_item" name="true_function" label="Функция если проверка ОК" />
+                <x-form-input :bind="$chain_item" name="true_function_param" label="Параметр функции если проверка ОК" />
+                <x-form-input :bind="$chain_item" name="false_function" label="Функция если проверка НЕ ОК" />
+                <x-form-input :bind="$chain_item" name="false_function_param" label="Параметр функции если проверка НЕ ОК" />
                 <button class="btn btn-success">Сохранить</button>
             </x-form>
         </div>

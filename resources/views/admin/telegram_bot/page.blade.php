@@ -29,5 +29,21 @@
                             href="{{ route('admin.telegram_bot.conversation_chain.create', $bot) }}">Создать</a>
                     @endcomponent
                 @endif
+                <h2 class="title text-center">Пользователи бота</h2>
+                {{$bot->conversations}}
+                @if (!collect($bot->conversations)->isEmpty())
+                    @component('component.table', [
+                        'items' => $bot->conversations,
+                        'show_fields' => ['caption'],
+                        'captions' => ['caption' => 'Название'],
+                        'link' => route('admin.telegram_bot.show', $bot) . '/conversation_chain/',
+                        'link_item_key' => 'id',
+                        ])
+                    @endcomponent
+                @else
+                    @component('component.alert', ['type' => 'warning'])
+                        обращений не было
+                    @endcomponent
+                @endif                
     </main>
 @endsection

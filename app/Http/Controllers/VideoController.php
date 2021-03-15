@@ -9,6 +9,10 @@ use FFMpeg\Coordinate\TimeCode;
 
 class VideoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function trim(Request $request)
     {
         $valid = $request->validate(

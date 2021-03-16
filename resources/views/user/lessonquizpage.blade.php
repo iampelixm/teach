@@ -13,7 +13,8 @@
             </h1>
             @if ($modulelesson->userAnswer)
                 @if ($modulelesson->userAnswer->answer_quiz)
-                    <div class="alert alert-info">Вы уже сдали этот тест. Повторная сдача аннулирует предыдущий результат
+                    <div class="alert alert-info">Вы уже сдавали этот тест. Повторная сдача аннулирует предыдущий результат.
+                        Не сдали тест? Смело пробуйте снова!
                     </div>
                 @endif
             @endif

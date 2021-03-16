@@ -114,6 +114,7 @@
 @endsection
 
 @push('javascript')
+
     <script src="/js/quiz_builder.js"></script>
     <script src="/js/quiz.js"></script>
     <script>

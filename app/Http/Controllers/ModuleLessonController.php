@@ -160,10 +160,13 @@ class ModuleLessonController extends Controller
         $quiz = json_decode($lesson->lesson_quiz);
         $answered = json_decode($answer->answer_quiz);
 
+        if(!$answered) return false;
+
         $result = [];
         $result['total_answers'] = 1;
         $result['correct_answers'] = 1;
         foreach ($quiz as $question_i => $question) {
+            
             $question_answer = $answered[$question_i];
             //Считаем правильные ответы в вопросе только если таковые указаны
             if (in_array('yes', $question->answer_correct)) {

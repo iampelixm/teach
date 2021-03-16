@@ -130,16 +130,17 @@ class WebController extends Controller
         $lesson_answer = $lesson->userAnswer; //LessonUserAnswer::where(['lesson_id' => $lesson_id, 'user_id' => Auth::user()->id])->first();
         if ($lesson->lesson_task) {
             if (!$lesson_answer) {
-                return redirect(route('web.lessonTask', ['lesson_id' => $lesson_id]));
+                return redirect(route('web.lessonTask', ['lesson_id' => $lesson_id]))
+                    ->withErrors(['Для завершения урока необходимо выполнить задание']);
             }
             if (!$lesson_answer->answer_text) {
-                return redirect(route('web.lessonTask', ['lesson_id' => $lesson_id]));
+                return redirect(route('web.lessonTask', ['lesson_id' => $lesson_id]))
+                ->withErrors(['В ответе на задание должен быть хоть какой-то текст']);
             }
         }
         $modulelessoncontroller = new ModuleLessonController;
         if ($lesson->lesson_quiz) {
             if (!$modulelessoncontroller->checkQuiz($lesson_id)) {
-
                 return redirect(route('web.lessonQuiz', ['lesson_id' => $lesson_id]))
                     ->withErrors(['quizcheckfalied' => 'Вы не ответили правильно на достаточное количество вопросов. Необходима пересдача теста']);
             }

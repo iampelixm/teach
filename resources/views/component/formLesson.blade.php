@@ -28,7 +28,7 @@ if(empty($lesson->lesson_id))
 </x-form>
 
 @push('javascript')
-<script src="/js/ckeditor.js"></script>
+<script src="/js/ckeditor/ckeditor.js"></script>
 
 <script>
 	ClassicEditor

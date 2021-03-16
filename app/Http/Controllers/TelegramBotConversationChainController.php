@@ -92,8 +92,11 @@ class TelegramBotConversationChainController extends Controller
      */
     public function edit($bot_id, TelegramBotConversationChain $conversation_chain)
     {
-        echo $bot_id ?? '';
-        dd($conversation_chain);
+        $template_data = AdminController::getTemplateData();
+        $template_data['bot'] = TelegramBot::find($bot_id);
+        if (!$template_data['bot']) abort(404);
+        $template_data['chain'] = $conversation_chain;
+        return view('admin.telegram_bot.conversation_chain.edit', $template_data);
     }
 
     /**
@@ -103,9 +106,26 @@ class TelegramBotConversationChainController extends Controller
      * @param  \App\Models\TelegramBotConversationChain  $telegramBotConversationChain
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TelegramBotConversationChain $conversation_chain)
+    public function update($bot_id, Request $request, TelegramBotConversationChain $conversation_chain)
     {
-        //
+        $valid = $request->validate(
+            [
+                'id'=>'required',
+                'caption' => 'required|string',
+                'start_message' => 'nullable|string',
+                'bot_id' => 'required'
+            ]
+        );
+        if (!$valid) return back()->withInput();
+
+        $record = $conversation_chain;
+        $fields = Schema::getColumnListing($record->getTable());
+
+        foreach ($fields as $field) {
+            $record->$field = $request->input($field);
+        }
+        $record->save();
+        return redirect(route('admin.telegram_bot.conversation_chain.show', [$bot_id, $record]));
     }
 
     /**
@@ -114,8 +134,9 @@ class TelegramBotConversationChainController extends Controller
      * @param  \App\Models\TelegramBotConversationChain  $telegramBotConversationChain
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TelegramBotConversationChain $conversation_chain)
+    public function destroy($bot_id, TelegramBotConversationChain $conversation_chain)
     {
-        //
+        $conversation_chain->remove();
+        return redirect(route('admin.telegram_bot.conversation_chain.index', $bot_id));
     }
 }

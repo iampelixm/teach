@@ -110,7 +110,12 @@ class AdminController extends Controller
                     'link' => '/admin/log',
                     'caption' => 'Лог',
                     'title' => 'Лог'
-                ]
+                ],
+                [
+                    'link' => '/admin/telegram_bot',
+                    'caption' => 'Боты',
+                    'title' => 'Боты'
+                ]                
             );
         }
         return $nav;

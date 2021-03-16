@@ -19,6 +19,7 @@ class BotController extends BaseController
     public $bot; //модель бота
     public $conversation; //модель общения
     public $chains; //объект модели цепочек
+    public $commands; //оъект класса модели команд бота
     //общие функции ботов
 
     public function sendMessage($text)
@@ -112,6 +113,24 @@ class BotController extends BaseController
     {
         $command_data=explode(' ',$this->message);
         $command=array_shift($command_data);
-        $this->sendMessage('command received: ' . $command);
+        $bot_command=$this->commands::where('command', $command)->first();
+        if($bot_command)
+        {
+            $actions=$bot_command->actions;
+            foreach($actions as $action)
+            {
+                $function=$action->action;
+                $param1=$action->action_param_1;
+                if (method_exists($this, $function)) {
+                    $this->$function($param1);
+                }
+                else
+                {
+                    $this->sendMessage('unknown command received: ' . $action->action);
+                }
+                
+            }
+        }
+        
     }
 }

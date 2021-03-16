@@ -12,7 +12,7 @@ if (!isset($chain)) {
                 {{ $chain->id ? 'Изменить цепочку ' . $chain->name . ' бота ' . $bot->name : 'Создание цепочки бота ' . $bot->name }}
             </h1>
             <x-form
-                action="{{ $chain->id ? route('admin.telegram_bot.conversation_chain.update', $chain->id) : route('admin.telegram_bot.conversation_chain.store', $bot->id) }}"
+                action="{{ $chain->id ? route('admin.telegram_bot.conversation_chain.update', [$bot->id,$chain->id]) : route('admin.telegram_bot.conversation_chain.store', $bot->id) }}"
                 method="POST">
                 @if ($chain && $chain->id)
                     @method('PATCH')

@@ -10,7 +10,7 @@ class TelegramBotConversationChain extends Model
     use HasFactory;
     public function bot()
     {
-        return $this->belongsTo(TelegramBot::class,'bot_id', 'id');
+        //return $this->belongsTo(TelegramBot::class,'bot_id', 'id');
     }
 
     public function items()

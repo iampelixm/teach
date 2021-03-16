@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\BOT;
 use App\Models\TelegramBot;
 use App\Models\TelegramBotConversationChain;
 use App\Models\TelegramBotConversationChainItem;
+use App\Models\TelegramBotCommand;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -20,6 +21,7 @@ class TelegramController extends BotController
     public function __construct()
     {
         $this->chains=new TelegramBotConversationChain();
+        $this->commands=new TelegramBotCommand();
     }
 
     public function processHook(Request $request, $key)
@@ -42,6 +44,7 @@ class TelegramController extends BotController
             //Команды присылаются как сообщения. Но команда всегда начинается с "/"
             if(mb_substr($this->message,0,1) == '/')
             {
+                $this->message=mb_substr($this->message, 1);
                 $this->update_type='command';
             }
             $this->chat_id = $update['message']['from']['id'];
@@ -132,30 +135,30 @@ class TelegramController extends BotController
             $false_function_param=mb_substr($false_function_param, 1);
             $false_function_param = $this->$false_function_param ?? '';
         }
-        $this->sendMessage('обработка запроса. Текущее звено '.$this->conversation->chain_item_id);
+        //$this->sendMessage('обработка запроса. Текущее звено '.$this->conversation->chain_item_id);
 
         //$this->startChain(4);
         //$this->sendMessage('Цепочка: '.$this->conversation->nextChainItem());
         if (method_exists($this, $check_function)) {
-            $this->sendMessage("Пытаюсь выполнить $check_function($check_function_param)");
+           // $this->sendMessage("Пытаюсь выполнить $check_function($check_function_param)");
             $check_result = $this->$check_function($check_function_param);
-            $this->sendMessage("Result: $check_result ");
+            //$this->sendMessage("Result: $check_result ");
             if ($check_result) {
-                $this->sendMessage("Результат похож на правду");
+                //$this->sendMessage("Результат похож на правду");
                 if (method_exists($this, $true_function)) {
-                    $this->sendMessage("Выполняю TRUE ");
+                    // $this->sendMessage("Выполняю TRUE ");
                     $this->$true_function($true_function_param);
                 }
                 else {
-                    $this->sendMessage("Нет такого TRUE метода: $true_function ");
+                    // $this->sendMessage("Нет такого TRUE метода: $true_function ");
                 }
             } else {
-                $this->sendMessage("Выполняю FALSE ");
+                // $this->sendMessage("Выполняю FALSE ");
                 if (method_exists($this, $false_function)) {
                     $this->$false_function($false_function_param);
                 }
                 else {
-                    $this->sendMessage("нет такого FALSEметода $false_function");
+                    // $this->sendMessage("нет такого FALSEметода $false_function");
                 }
             }
         } else {

@@ -18,4 +18,9 @@ class TelegramBot extends Model
     {
         return $this->hasMany(TelegramBotConversation::class, 'bot_id','id');
     }
+
+    public function commands()
+    {
+        return $this->hasMany(TelegramBotCommand::class,'bot_id','id');
+    }
 }

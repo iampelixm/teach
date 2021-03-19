@@ -140,8 +140,9 @@ class TelegramBotConversationChainItemController extends Controller
      * @param  \App\Models\TelegramBotConversationChainItem  $telegramBotConversationChainItem
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TelegramBotConversationChainItem $chain_item)
+    public function destroy($bot_id, $chain_id, TelegramBotConversationChainItem $chain_item)
     {
-        //
+        $chain_item->delete();
+        return redirect(route('admin.telegram_bot.command.conversation_chain.show', [$bot_id, $chain_id]));
     }
 }

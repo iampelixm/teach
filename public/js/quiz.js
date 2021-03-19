@@ -119,9 +119,6 @@ function buildQuiz(container = '#quiz_container', quizdata) {
         `;
     }
 
-    console.log('quizadata');
-    console.log(quizdata);
-
     $(quiz_skeleton).appendTo(quiz);
     var questions_container = $(quiz).find('.questions_container');
     //один вопрос не будет упакован в массив, а мы ожидаем массив
@@ -325,7 +322,8 @@ function quizCollectAnswers(container) {
                 this_answer.value = $(selected).val();
                 answer.answered.push(this_answer);
             });
-
+            console.log('AJSWER');
+            console.log(answer);
             quizdata.answers.push(answer);
 
             if ($(screen).is(':visible')) return false; //выходим на текущем а
@@ -337,16 +335,22 @@ function quizCollectAnswers(container) {
 function quizDone(id, link = '', append = {}) {
     var quiz = $(id);
 
+    //Глобальная переменная quiz_data_append задается на странице квиза
     if (quiz_data_append) {
         $.each(quiz_data_append, function (append_key, append_value) {
             append[append_key] = append_value;
         });
     }
 
-    console.log(append);
-
     if (!link) {
-        if (quiz_link) link = quiz_link;
+        //Глобальная переменная ссылки для отправки квиза
+        if (quiz_link) {
+            link = quiz_link;
+        }
+        else {
+            quizMessage(quiz, 'Квиз завершен. Сохранение данныех не предусмотрено');
+            return '';
+        }
     }
 
     $(quiz).find('.btndone:not(.disabled)').addClass('disabled');
@@ -367,9 +371,6 @@ function quizDone(id, link = '', append = {}) {
     Пожалуйста, попробуйте повторить отправку данных.
     `;
 
-    if (!done_message) done_message = 'Спасибо за ваш ответ';
-
-
     //$(quiz).find('.messages').find('.message').html('обработка');
     quizMessage(quiz, '<h4 class="title text-center">Обработка</h4>');
     console.log("sending quiz to", link);
@@ -380,6 +381,7 @@ function quizDone(id, link = '', append = {}) {
         function (response) {
             console.log('RESP');
             console.log(response);
+            if (!done_message) done_message = response;
             quizMessage(quiz, done_message);
         },
         ''

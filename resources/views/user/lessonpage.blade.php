@@ -1,8 +1,5 @@
 @extends('layout.user')
 
-@push('css')
-    <link href="/css/plyr.css" rel="stylesheet">
-@endpush
 @section('content')
     <main>
         <div class="container">
@@ -15,6 +12,11 @@
                 {{ $modulelesson->lesson_caption }}
             </h1>
 
+            @if(Auth::user()->isAn('su', 'coursemanager'))
+            <div class="text-right py-2">
+                <a href="{{route('admin.lesson.edit', $modulelesson)}}" class="btn btn-info">В редактор</a>
+            </div>
+            @endif
             @if (!collect($videos)->isEmpty())
                 <div id="lesson_videos">
                     @foreach ($videos as $file_i => $file)
@@ -45,9 +47,11 @@
             @if ($modulelesson->lesson_quiz)
                 <a class="btn btn-info" href="/lessonquiz/{{ $modulelesson->lesson_id }}">Перейти к тесту</a>
             @endif
+
+            @if(($modulelesson->lesson_task && $modulelesson->userAnswer && $modulelesson->userAnswer->answer_text))
             <a class="btn btn-success"
                 href="{{ route('web.lesson.done', ['lesson_id' => $modulelesson->lesson_id]) }}">Завершить урок</a>
-
+            @endif
             @if ($next_lesson)
                 <a class="btn btn-outline-success" href="{{ route('web.lessonPage', $next_lesson->lesson_id) }}">
                     Далее: {{ $next_lesson->lesson_caption }}
@@ -58,11 +62,16 @@
     </main>
 @endsection
 
-@push('javascript')
-    {{-- <script src="/js/plyr.min.js"></script>
-    <script>
-        //const players = Plyr.setup('video');
-        const players = videojs('video');
-
-    </script> --}}
+@push('appjsload')
+    $('oembed').each(function(ei, el)
+    {
+        let url=$(el).attr('url');
+        url=url.replace(/^.*\//, '');
+        url=url.replace(/^.*=/, '');
+        let params={};
+        params.video_id=url;
+        var r=youtube_embed_template(params);
+        console.log(r);
+        $(r).insertAfter($(el).parent());
+    });
 @endpush

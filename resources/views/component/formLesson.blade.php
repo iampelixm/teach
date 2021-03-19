@@ -9,16 +9,32 @@ if(empty($lesson->lesson_id))
     $form_action='/admin/lessons/add';
     $submit_caption='Записать';
 }
+if(!empty($lesson->lesson_id))
+{
+    $upload_url=route('admin.lesson.ckeditor-image', $lesson);
+}
+else {
+    $lesson->lesson_id='';
+    $upload_url='';
+}
+
+$lesson_module=App\Models\CourseModule::find($lesson->toArray()['module_id']);
+$modules=$lesson_module->course->modules;
 @endphp
 
 <h2 class="title">{{$form_caption}}</h2>
 <x-form action="{!!$form_action!!}">
     <x-form-input :bind="$lesson" type="hidden" name="lesson_id"/>
     <x-form-input :bind="$lesson" type="hidden" name="module_id"/>
+    <x-form-select :bind="$lesson" name="module_id" label="Находится в модуле">
+        @foreach($modules as $module)
+            <option value="{{$module->module_id}}" {{$lesson_module->module_id == $module->module_id ? 'selected' : ''}}>{{$module->module_caption}}</option>
+        @endforeach
+    </x-form-select>
     <x-form-input :bind="$lesson" type="text" name="lesson_caption" label="*Название урока" required/>
     <x-form-textarea :bind="$lesson" name="lesson_presc" label="*Короткое описание урока" required/>
-    <x-form-textarea :bind="$lesson" id="editor" class="ckeditor" name="lesson_text" label="*Контент урока"/>
-    <x-form-textarea :bind="$lesson" id="editor1" class="ckeditor" name="lesson_task" label="Задание урока"/>
+    <x-form-textarea :bind="$lesson" data-upload_url="{{$upload_url}}" class="ckeditor" name="lesson_text" label="*Контент урока"/>
+    <x-form-textarea :bind="$lesson" data-upload_url="{{$upload_url}}" class="ckeditor" name="lesson_task" label="Задание урока"/>
     <x-form-submit>{{$submit_caption}}</x-form-submit>
     @if(empty($lesson->lesson_id))
         @component('component.alert',['type'=>'warning'])
@@ -26,31 +42,3 @@ if(empty($lesson->lesson_id))
         @endcomponent
     @endif        
 </x-form>
-
-@push('javascript')
-<script src="/js/ckeditor/ckeditor.js"></script>
-
-<script>
-	ClassicEditor
-		.create( document.querySelector( '#editor' ), {
-			// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-		} )
-		.then( editor => {
-			window.editor1 = editor;
-		} )
-		.catch( err => {
-			console.error( err.stack );
-        } );
-        
-	ClassicEditor
-		.create( document.querySelector( '#editor1' ), {
-			// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-		} )
-		.then( editor => {
-			window.editor2 = editor;
-		} )
-		.catch( err => {
-			console.error( err.stack );
-		} );        
-</script>
-@endpush

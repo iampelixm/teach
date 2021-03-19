@@ -7,7 +7,11 @@
             </h1>
             <div class="text-right">
                 <a href="{{ route('admin.telegram_bot.command.edit', [$bot, $command]) }}"
-                    class="btn btn-info">Изменить</a>
+                    class="btn btn-info">Изменить команду</a>
+                <x-form action="{{route('admin.telegram_bot.command.destroy', [$bot, $command])}}" method="POST">
+                    @method("DELETE")
+                <button class="btn btn-danger">Удалить команду</button> 
+                </x-form>
             </div>
 <a class="btn btn-sm btn-success" href="{{route('admin.telegram_bot.command.index', $bot->id)}}">К командам бота</a>
             <div>Описание бота: {{ $bot->presc }}</div>

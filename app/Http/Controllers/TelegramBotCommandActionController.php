@@ -135,7 +135,7 @@ class TelegramBotCommandActionController extends Controller
      */
     public function destroy($bot_id, $command_id, TelegramBotCommandAction $action)
     {
-        $action->remove();
-        return redirect(route('admin.telegram_bot.command.action.index', [$action->command->bot, $action->command, $action]));
+        $action->delete();
+        return redirect(route('admin.telegram_bot.command.show', [$action->command->bot, $action->command]));
     }
 }

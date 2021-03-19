@@ -59,6 +59,12 @@
     </script>
 
     @stack('javascript')
+    <script>
+    appjs.addEventListener('load', function()
+    {
+    @stack('appjsload')
+    });
+    </script>    
 </body>
 
 </html>

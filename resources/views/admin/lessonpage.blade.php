@@ -80,7 +80,7 @@
                     data-href="/admin/lessons/delete" data-action="ajax"
                     data-data='{"lesson_id": "{{ $modulelesson->lesson_id }}"}' data-title="Удалить урок?"
                     data-message="Точно удалить это занятие? Это действие необратимо." data-success="">
-                    Удалить
+                    Удалить урок
                 </button>
             </div>
             <h3 class="title mt-4">Опросник</h3>
@@ -102,12 +102,14 @@
                 квиз
             </button>
             @if ($modulelesson->lesson_quiz)
-                <button class="btn btn-danger ajaxyesno" data-role="dialog" data-requesttype="post" data-dialog="yesno"
-                    data-href="/admin/lessons/update" data-action="ajax"
-                    data-data='{"lesson_id": "{{ $modulelesson->lesson_id }}", "lesson_quiz": ""}'
-                    data-title="Удалить квиз?" data-message="Квиз делать долго, точно нужно удалить?" data-success="">
-                    Удалить
-                </button>
+                <div class="text-right">
+                    <button class="btn btn-danger ajaxyesno" data-role="dialog" data-requesttype="post" data-dialog="yesno"
+                        data-href="/admin/lessons/update" data-action="ajax"
+                        data-data='{"lesson_id": "{{ $modulelesson->lesson_id }}", "lesson_quiz": ""}'
+                        data-title="Удалить квиз?" data-message="Квиз делать долго, точно нужно удалить?" data-success="">
+                        Удалить квиз
+                    </button>
+                </div>
             @endif
         </div>
     </main>

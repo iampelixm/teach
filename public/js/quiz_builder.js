@@ -27,7 +27,13 @@ let quiz_builder_answer_variant_template = function (data) {
         ret +=
             `
             <div class="row">
-                <div class="col-lg-5">
+                <div class="col-lg-1">
+                    <div class="form-group">
+                        <label>Управление</label>
+                        <button class="btn btn-danger" onclick="$(this).parent().parent().parent().remove()">X</button>
+                    </div>       
+                </div>
+                <div class="col-lg-4">
                     <div class="form-group">
                         <label>Вариант ответа</label>
                         <input value="${data.answer_variant[vi] ?? ''}" class="form-control" type="text" name="answer_variant" placeholder="Введите вариант ответа">
@@ -78,13 +84,12 @@ let quiz_builder_question_template = function (data) {
     return `
     <form class="quiz p-2 mt-4">
     <h2 class="title text-center">Вопрос</h2>
+    <div class="text-right"><button class="btn btn-danger" onclick="$(this).parent().parent().remove()">Удалить вопрос</button></div>
         <div class="quiz_question">
             <div class="form-group">
                 <label>Формат ответов</label>
                 <select class="form-control" name="question_type">
-                    <option value="contacts_phone" ${data.question_type == 'contacts_phone' ? 'selected' : ''}>Контакты</option>
                     <option value="radio" ${data.question_type == 'radio' ? 'selected' : ''}>Один на выбор</option>
-                    <option value="input" ${data.question_type == 'input' ? 'selected' : ''}>Ручной ввод</option>
                 </select>
             </div>
 
@@ -95,24 +100,36 @@ let quiz_builder_question_template = function (data) {
 
             <div class="form-group">
                 <label>Уточнение, описание</label>
-                <input class="form-control" value="${data.question_describe ?? ''}" type="text" name="question_describe" placeholder="question presc">
-            </div>            
-            <div class="form-group">
-                <label>Только правльный ответ</label>
-                <div class="form-check">
-                    <input ${data.question_only_correct_answer == 'yes' ? 'checked' : ''} class="form-check-input" type="checkbox" onchange="$(this).parent().parent().find('input[type=checkbox]').not(this).prop('checked', !$(this).prop('checked'))" name="question_only_correct_answer" value="yes">
-                    <label class="form-check-label">
-                        Да
-                    </label>            
-                </div>
-                <div class="form-check">
-                    <input ${data.question_only_correct_answer == 'no' ? 'checked' : ''} class="form-check-input" type="checkbox" onchange="$(this).parent().parent().find('input[type=checkbox]').not(this).prop('checked', !$(this).prop('checked'))" name="question_only_correct_answer" value="no">
-                    <label class="form-check-label">
-                        Нет
-                    </label>            
-                </div>                
+                <textarea class="form-control" name="question_describe" placeholder="Описание вопроса">${data.question_describe ?? ''}</textarea>
             </div>
             
+            <div class="form-group">
+                <label>Подсказка правильного ответа</label>
+                <input class="form-control" value="${data.question_help ?? ''}" type="text" name="question_help" placeholder="Подсказка">
+            </div>
+            
+            <div class="row">
+                <div class="form-group col-lg-3">
+                    <label>Только правльный ответ</label>
+                    <div class="form-check">
+                        <input ${data.question_only_correct_answer == 'yes' ? 'checked' : ''} class="form-check-input" type="checkbox" onchange="$(this).parent().parent().find('input[type=checkbox]').not(this).prop('checked', !$(this).prop('checked'))" name="question_only_correct_answer" value="yes">
+                        <label class="form-check-label">
+                            Да
+                        </label>            
+                    </div>
+                    <div class="form-check">
+                        <input ${data.question_only_correct_answer == 'no' ? 'checked' : ''} class="form-check-input" type="checkbox" onchange="$(this).parent().parent().find('input[type=checkbox]').not(this).prop('checked', !$(this).prop('checked'))" name="question_only_correct_answer" value="no">
+                        <label class="form-check-label">
+                            Нет
+                        </label>            
+                    </div>                
+                </div>
+
+                <div class="form-group col-lg-3">
+                    <label>Проходной % правильных ответов</label>
+                    <input class="form-control" value="${data.question_percentage ?? ''}" type="number" name="question_percentage" placeholder="10-100">
+                </div>
+            </div>
             <h3 class="title mt-4">Ответы:</h3>
             <button class="addanswervariant btn btn-sm btn-info">Добавить ответ</button>
             <div class="container answer_variants">                

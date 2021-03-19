@@ -36,7 +36,7 @@
                         value="{{ collect($user_answer)->isEmpty() ? Auth::user()->id : $user_answer->user_id }}"
                         type="hidden" name="user_id" />
                     <x-form-input value="{{ $modulelesson->lesson_id }}" type="hidden" name="lesson_id" />
-                    <x-form-textarea :bind="$user_answer" id="editor" name="answer_text" label="Ответ на задание" />
+                    <x-form-textarea :bind="$user_answer" class="ckeditor" id="editor" name="answer_text" label="Ответ на задание" />
                     <x-form-input type="file" name="file" label="Прикрепить файлы" multiple />
                     <x-form-submit>Сохранить</x-form-submit>
                 </x-form>
@@ -75,32 +75,3 @@
         </div>
     </main>
 @endsection
-
-@push('javascript')
-    <script src="/js/ckeditor.js"></script>
-
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                // toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-            })
-            .then(editor => {
-                window.editor1 = editor;
-            })
-            .catch(err => {
-                console.error(err.stack);
-            });
-
-        ClassicEditor
-            .create(document.querySelector('#editor1'), {
-                // toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-            })
-            .then(editor => {
-                window.editor2 = editor;
-            })
-            .catch(err => {
-                console.error(err.stack);
-            });
-
-    </script>
-@endpush

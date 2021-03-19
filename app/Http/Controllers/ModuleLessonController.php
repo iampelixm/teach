@@ -188,7 +188,6 @@ class ModuleLessonController extends Controller
             //echo "<br>C: $correct_aswer";
         }
         $per = ($result['correct_answers'] / $result['total_answers']) * 100;
-        echo "PER: $per";
         if ($per >= $minimal_percentage) return true;
 
         return false;
@@ -197,5 +196,18 @@ class ModuleLessonController extends Controller
         echo '<hr>';
         dd($answered);
         */
+    }
+
+    public function ckeditorUpload($lesson_id, Request $request)
+    {
+        $lesson=ModuleLesson::find($lesson_id);
+        $name = $request->file('upload')->getClientOriginalName();
+        $path = 'lessons/' . $lesson_id . '/images';
+        $file_path = Storage::putFileAs($path, $request->file('upload'), $name);
+        Storage::setVisibility($file_path, 'public');
+        return '{
+            "uploaded": true,
+            "url": "/storage/'. $file_path.'"
+            }';
     }
 }

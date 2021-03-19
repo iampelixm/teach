@@ -54,7 +54,7 @@ class WebController extends Controller
         $user = Auth::user();
         if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
         $template_data = $this->getTemplateData();
-        $template_data['courses'] = collect($user->courses)->concat(Course::where(['is_access_listed' => 0])->get());
+        $template_data['courses'] = collect($user->courses);//->concat(Course::where(['is_access_listed' => 0])->get());
         return view('user.courses', $template_data);
     }
 
@@ -187,6 +187,45 @@ class WebController extends Controller
         $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
         return view('user.lessonquizpage', $template_data);
+    }
+
+    public function quizResult($lesson_id)
+    {
+        $lesson = ModuleLesson::find($lesson_id);
+        $quiz = json_decode($lesson->lesson_quiz);
+        $quiz_answer = json_decode($lesson->userAnswer->answer_quiz);
+        // dd($quiz_answer);
+        $out_data = [];
+        foreach ($quiz as $question_i => $question) {
+            $question_data= [];
+            $question_data['question'] = $question;
+            $question_data['answer'] = $quiz_answer[$question_i];
+            //$quiz_answer = $quiz_answer[$question_i];
+            if (in_array('yes', $question->answer_correct)) {
+                foreach ($question_data['answer']->answered as $answer_i => $answer_value) {
+                    $correct_aswer = array_search('yes', $question->answer_correct);
+                    $answer_question_index = array_search($answer_value->value, $question->answer_variant);
+                    if ($correct_aswer == $answer_question_index) {
+                        $question_data['answer']->correct = true;
+                    } else {
+                        $question_data['answer']->correct = false;
+                    }
+                }
+            } else {
+                $question_data['answer']->correct = true;
+            }
+            $out_data[] = $question_data;
+        }
+        return $out_data;        
+    }
+
+    public function pageQuizResult($lesson_id)
+    {
+        $quiz_result=$this->quizResult($lesson_id);
+        $template_data = $this->getTemplateData();
+        $template_data['quiz_result']= $quiz_result;
+        $template_data['modulelesson']=ModuleLesson::find($lesson_id);
+        return view('user.quizresultpage', $template_data);
     }
 
     public function userProfile()

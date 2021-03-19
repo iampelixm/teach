@@ -163,7 +163,7 @@ class AdminController extends Controller
         $template_data['courses'] = $courses->get();
         $template_data['modules'] = $modules->get();
         $template_data['lessons'] = $lessons->get();
-        $template_data['user_answers'] = $user_answers->get();
+        $template_data['user_answers'] = $user_answers->orderBy('answer_id', 'DESC')->get();
         $template_data['students'] = $students->get();
         return view('admin.studyprocess', $template_data);
     }

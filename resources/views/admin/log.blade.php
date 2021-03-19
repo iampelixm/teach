@@ -3,7 +3,7 @@
 @section('content')
 <main>
     <div class="container">
-        <h1 class="title text-center">Все курсы</h1>        
+        <h1 class="title text-center">Лог событий</h1>        
         @component('component.table', 
             [
                 'items'=>$log,

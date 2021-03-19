@@ -101,16 +101,19 @@ Route::prefix('/admin')->name('admin.')->group(function () {
         Route::post('/modules/setLessonsOrder', [CourseModuleController::class, 'setLessonsOrder'])
             ->name('setLessonOrder');
     });
-    Route::get('/lessons/deletefile', [ModuleLessonController::class, 'deleteFile']);
-    Route::get('/lessons/{lesson_id}', [AdminController::class, 'pageLesson']);
 
+    Route::name('lesson.')->prefix('/lessons')->group(function()
+    {
+        Route::get('/deletefile', [ModuleLessonController::class, 'deleteFile']);
+        Route::get('/{lesson_id}', [AdminController::class, 'pageLesson'])->name('edit');
+        Route::post('/{lesson_id}/ckeditor-image', [ModuleLessonController::class, 'ckeditorUpload'])->name('ckeditor-image');
 
-    Route::post('/lessons/add', [ModuleLessonController::class, 'addModuleLesson']);
-    Route::post('/lessons/update', [ModuleLessonController::class, 'updateModuleLesson']);
-    Route::post('/lessons/delete', [ModuleLessonController::class, 'deleteModuleLesson']);
+        Route::post('/add', [ModuleLessonController::class, 'addModuleLesson'])->name('add');
+        Route::post('/update', [ModuleLessonController::class, 'updateModuleLesson'])->name('update');
+        Route::post('/delete', [ModuleLessonController::class, 'deleteModuleLesson'])->name('delete');
 
-    Route::post('/lessons/upload', [ModuleLessonController::class, 'uploadFiles']);
-
+        Route::post('/upload', [ModuleLessonController::class, 'uploadFiles'])->name('uploadFiles');
+    });
     Route::get('/log', [AdminController::class, 'pageLog']);
 
     Route::post('/video/trim', [VideoController::class, 'trim'])->name('video.trim');
@@ -142,6 +145,7 @@ Route::prefix('/')->name('web.')->group(
         Route::post('/userlessonanswer', [LessonUserAnswerController::class, 'saveUserAnswer']);
         Route::post('/userlessonquiz', [LessonUserAnswerController::class, 'saveUserQuiz']);
 
+        Route::get('/quizresult/{lesson_id}', [WebController::class, 'pageQuizResult'])->name('quizresult');
         Route::get('/lessonquiz/{lesson_id}', [WebController::class, 'pageLessonQuiz'])->name('lessonQuiz');
 
         Route::get('/file/get', [FilesController::class, 'getFile']);

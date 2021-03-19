@@ -84,7 +84,7 @@ class LessonUserAnswerController extends Controller
                 'lesson_id' => 'required'
             ]
         );
-        if (!$valid) return back()->withInput();
+        if (!$valid) return 'Не указан урок';
         $lesson_id = $request->input('lesson_id');
         $lessonUserAnswer = LessonUserAnswer::where(['lesson_id' => $lesson_id, 'user_id' => Auth::user()->id])->first();
         if (!$lessonUserAnswer) {
@@ -106,6 +106,8 @@ class LessonUserAnswerController extends Controller
                 Auth::user()->name . ' (' . Auth::user()->id . ')'
                 . ' на квиз урока ' . $lessonUserAnswer->lesson_id
         ]);
-        return back();
+
+        $modulelessoncontroller = new ModuleLessonController;
+        return view('component.quiz_answer', ['quiz'=>$lessonUserAnswer->answer_quiz, 'lesson_id'=>$lesson_id]);
     }
 }

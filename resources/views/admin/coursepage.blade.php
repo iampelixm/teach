@@ -3,6 +3,7 @@
 @section('content')
     <main>
         <div class="container">
+            <a href="/admin">Главная</a> 
             <h1 class="title text-center">Курс {{ $course->course_caption }}</h1>
             <button class="btn btn-info" data-toggle="collapse" data-target="#course_form" aria-expanded="false"
                 aria-controls="course_form">Описние</button>

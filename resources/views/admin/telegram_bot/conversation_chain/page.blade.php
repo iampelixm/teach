@@ -7,14 +7,18 @@
             </h1>
             <div class="text-right">
                 <a href="{{ route('admin.telegram_bot.conversation_chain.edit', [$bot, $chain]) }}"
-                    class="btn btn-info">Изменить</a>
+                    class="btn btn-info">Изменить беседу</a>
+                <x-form action="{{route('admin.telegram_bot.conversation_chain.destroy', [$bot, $chain])}}" method="POST">
+                    @method('DELETE')
+                    <button class="btn btn-danger">Удалить беседу</button>
+                </x-form>
             </div>
-<a href="{{route('admin.telegram_bot.conversation_chain.index', $bot->id)}}">К цепочкам бота</a>
+<a href="{{route('admin.telegram_bot.conversation_chain.index', $bot->id)}}">К беседам бота</a>
             <div>Описание бота: {{ $bot->presc }}</div>
             <div>Стартовое сообщение: {{ $chain->start_message }}</div>
-            <h1 class="title">Звенья</h1>
+            <h1 class="title">Звенья беседы</h1>
             <div class="text-right"><a class="btn btn-success"
-                    href="{{ route('admin.telegram_bot.conversation_chain.chain_item.create', [$bot->id, $chain->id]) }}">Создать</a>
+                    href="{{ route('admin.telegram_bot.conversation_chain.chain_item.create', [$bot, $chain]) }}">Создать</a>
                     
                 @if (!collect($chain->items)->isEmpty())
                     @component('component.table', [
@@ -27,9 +31,7 @@
                     @endcomponent
                 @else
                     @component('component.alert', ['type' => 'warning'])
-                        Цепочек еще нет.
-                        <a class="btn btn-success"
-                            href="{{ route('admin.telegram_bot.conversation_chain.create', $bot) }}">Создать</a>
+                        Сообщений еще нет
                     @endcomponent
                 @endif
     </main>

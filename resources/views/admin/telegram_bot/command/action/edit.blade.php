@@ -11,6 +11,14 @@ if (!isset($action)) {
             <h1 class="title text-center">
                 {{ $action->id ? 'Изменить действие ' . $action->action . ' команды ' . $action->command->caption .' бота '. $action->command->bot->name : 'Создание действия команды ' . $command->caption }}
             </h1>
+            @if($action->id)
+                <div class="text-right">
+                    <x-form action="{{route('admin.telegram_bot.command.action.destroy', [$bot, $command, $action])}}" method="POST">
+                        @method('DELETE')
+                    <button class="btn btn-danger btn-sm">Удалить действие</button>
+                    </x-form>
+                </div>
+            @endif
 <a class="btn btn-info" href="{{route('admin.telegram_bot.command.show', [$bot->id, $command->id])}}">К команде</a>            
             <x-form
                 action="{{ $action->id ? 

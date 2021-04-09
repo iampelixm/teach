@@ -16,7 +16,8 @@ class BotController extends BaseController
     public $user; //модель пользователя
     public $update; //полученные данные
     public $message; //полученный текст
-    public $bot; //модель бота
+    public $bot_model; //модель бота
+    public $bot; //фасад бота
     public $conversation; //модель общения
     public $chains; //объект модели цепочек
     public $commands; //оъект класса модели команд бота
@@ -70,6 +71,7 @@ class BotController extends BaseController
         $user = User::where('check_code', $code)->first();
         if ($user) {
             $user->telegram_id = $this->chat_id;
+            $user->check_code='';
             $user->save();
             return true;
         }
@@ -113,7 +115,7 @@ class BotController extends BaseController
     {
         $command_data=explode(' ',$this->message);
         $command=array_shift($command_data);
-        $bot_command=$this->commands::where('command', $command)->first();
+        $bot_command=$this->commands::where(['command'=>$command, 'bot_id'=>$this->bot_model->id])->first();
         if($bot_command)
         {
             $actions=$bot_command->actions;
@@ -131,6 +133,9 @@ class BotController extends BaseController
                 
             }
         }
-        
+        else
+        {
+            $this->sendMessage('Команда не опознана');
+        }
     }
 }

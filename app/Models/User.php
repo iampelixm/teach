@@ -33,6 +33,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+protected $attributes=[
+'telegram_id'=>'',
+'check_code'=>''
+];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -57,6 +62,12 @@ class User extends Authenticatable
     {
         return $this->hasManyThrough(CourseModule::class, CourseModuleUser::class, 'user_id', 'module_id', 'id', 'module_id');
     }
+
+    public function course_modules($course_id)
+    {
+        return $this->hasManyThrough(CourseModule::class, CourseModuleUser::class, 'user_id', 'module_id', 'id', 'module_id')
+            ->where('course_modules.course_id', $course_id);
+    }    
 
     public function lessons()
     {

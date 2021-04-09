@@ -117,7 +117,8 @@ class WebController extends Controller
         $template_data['next_lesson'] = $lesson->module->availableLessons->where('lesson_order', '>', $lesson->lesson_order)->first();
         //Если еще нет записи в таблице прохождения уроков - создадим ее со статусом opened (задается по умолчанию)
         if ($user->isA('student')) {
-            $lessonProcess = UserLessonProccess::firstOrNew(['user_id' => $user->id, 'lesson_id' => $lesson_id]);
+            $lessonProcess = UserLessonProccess::firstOrCreate(['user_id' => $user->id, 'lesson_id' => $lesson_id]);
+            //$lessonProcess->save();
         }
         return view('user.lessonpage', $template_data);
     }
@@ -189,16 +190,19 @@ class WebController extends Controller
         return view('user.lessonquizpage', $template_data);
     }
 
-    public function quizResult($lesson_id)
+    public function quizResult($lesson_id, $user_id='')
     {
+        if(!$user_id) $user_id=Auth::user()->id;
         $lesson = ModuleLesson::find($lesson_id);
+        $answer=LessonUserAnswer::where(['lesson_id'=>$lesson_id,'user_id'=>$user_id])->first();
+        if(!$answer) return abort(404);
         $quiz = json_decode($lesson->lesson_quiz);
-        $quiz_answer = json_decode($lesson->userAnswer->answer_quiz);
-        // dd($quiz_answer);
+        $quiz_answer = json_decode($answer->answer_quiz);
         $out_data = [];
         foreach ($quiz as $question_i => $question) {
             $question_data= [];
             $question_data['question'] = $question;
+            if(!isset($quiz_answer[$question_i])) return abort(403,'Результат не соответствует квизу');
             $question_data['answer'] = $quiz_answer[$question_i];
             //$quiz_answer = $quiz_answer[$question_i];
             if (in_array('yes', $question->answer_correct)) {
@@ -219,9 +223,10 @@ class WebController extends Controller
         return $out_data;        
     }
 
-    public function pageQuizResult($lesson_id)
+    public function pageQuizResult($lesson_id, $user_id='')
     {
-        $quiz_result=$this->quizResult($lesson_id);
+        if(!$user_id) $user_id=Auth::user()->id;
+        $quiz_result=$this->quizResult($lesson_id, $user_id);
         $template_data = $this->getTemplateData();
         $template_data['quiz_result']= $quiz_result;
         $template_data['modulelesson']=ModuleLesson::find($lesson_id);

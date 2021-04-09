@@ -73,9 +73,26 @@ class AdminController extends Controller
             array_push(
                 $nav,
                 [
-                    'link' => route('admin.studyprocess'),
+                    'link' => '#',
                     'caption' => 'Учебный процесс',
-                    'title' => 'Учебный процесс'
+                    'title' => 'Учебный процесс',
+                    'childrens' => [
+                        [
+                            'link' => route('admin.studyprocess.activity'),
+                            'caption' => 'Последние события',
+                            'title' => 'Последние события',
+                        ],
+                        [
+                            'link' => route('admin.studyprocess.bystudent'),
+                            'caption' => 'По ученикам',
+                            'title' => 'По ученикам',
+                        ],
+                        [
+                            'link' => route('admin.studyprocess.progress'),
+                            'caption' => 'По ученикам',
+                            'title' => 'По ученикам',
+                        ]
+                    ]
                 ]
             );
         }
@@ -115,7 +132,7 @@ class AdminController extends Controller
                     'link' => '/admin/telegram_bot',
                     'caption' => 'Боты',
                     'title' => 'Боты'
-                ]                
+                ]
             );
         }
         return $nav;
@@ -139,24 +156,43 @@ class AdminController extends Controller
         return view('admin.index', $this->getTemplateData());
     }
 
-    public function pageStudyProcess(Request $request)
+    public function pageStudyProcessActivity(Request $request)
     {
         $courses = new Course();
         $modules = new CourseModule();
         $lessons = new ModuleLesson();
         $user_answers = new LessonUserAnswer();
         $students = new User();
+
+        $lessons_filter_array = [];
+        //фильтруем каскадно начиная от ответов пользователей и далее занятие - модуль - урок
+        if ($request->query('student_id')) {
+            $students = $students->where('id', $request->query('student_id'));
+            $user_answers = $user_answers->where('user_id', $request->query('student_id'));
+        }
+
+        if ($request->query('lesson_id')) {
+            $user_answers = $user_answers->where('lesson_id', $request->query('lesson_id'));
+            //$lessons=$lessons->where('lesson_id', $user_answers->pluck('lesson_id')->toArray());
+        }
+
         if ($request->query('course_id')) {
+            $courses = $courses->where('course_id', $request->query('course_id'));
+            $user_answers = $user_answers->whereIn('lesson_id', $courses->first()->lessons->pluck('lesson_id')->toArray());
+            $modules = $modules->where('course_id', $request->query('course_id'));
+            //$lessons=$lessons->whereIn('module_id', $modules->pluck('module_id')->toArray());
             #$courses = $courses->where('course_id', $request->query('course_id'));
             #$modules = $modules->where('course_id', $request->query('course_id'));
         }
 
         if ($request->query('module_id')) {
+            //$lessons=$lessons->where('module_id', $request->query('module_id'));
             #$modules = $modules->where('module_id', $request->query('module_id'));
             #$courses = $courses->where('course_id', $modules->first()->course->course_id ?? '*');
         }
 
-        $lessons = $lessons::whereIn('module_id', $modules->pluck('module_id')->toArray());
+        $students = $students->whereIn('id', $user_answers->pluck('user_id')->toArray());
+        $lessons = $lessons->whereIn('module_id', $modules->pluck('module_id')->toArray());
 
         $template_data = $this->getTemplateData();
 
@@ -165,7 +201,30 @@ class AdminController extends Controller
         $template_data['lessons'] = $lessons->get();
         $template_data['user_answers'] = $user_answers->orderBy('answer_id', 'DESC')->get();
         $template_data['students'] = $students->get();
-        return view('admin.studyprocess', $template_data);
+        return view('admin.studyprocess.activity', $template_data);
+    }
+
+    public function pageStudyProcessByStudent(Request $request)
+    {
+        $student = '';
+        $lesson_process = '';
+        if ($request->query('student_id')) {
+            $student = User::find($request->query('student_id'));
+            $lesson_process = UserLessonProccess::where(['user_id' => $student->id])->orderBy('updated_at', 'DESC')->get();
+        }
+        $template_data = $this->getTemplateData();
+        $template_data['student'] = $student;
+        $template_data['lesson_process'] = $lesson_process;
+        return view('admin.studyprocess.bystudent', $template_data);
+    }
+    
+    public function pageStudyProcessProgress(Request $request)
+    {
+
+        $template_data = $this->getTemplateData();
+        // $template_data['student'] = $student;
+        // $template_data['lesson_process'] = $lesson_process;
+        return view('admin.studyprocess.progress', $template_data);
     }
 
     public function pageNewCourse()
@@ -275,6 +334,10 @@ class AdminController extends Controller
         $template_data = $this->getTemplateData();
         $template_data['log'] = Log::orderBy('log_id', 'DESC')->paginate('300')->all();
         return view('admin.log', $template_data);
+    }
+
+    public function pageUserCurrentLessons(User $user)
+    {
     }
 
     public function makeDefaultPermissions()

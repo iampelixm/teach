@@ -32,7 +32,7 @@
                 @component('component.table', [
                     'items' => $course->modules,
                     'show_fields' => ['module_caption', 'module_presc'],
-                    'captions' => ['module_caption' => 'Название модуля', 'module_presc' => 'Описание модуля'],
+                    'captions' => ['module_caption' => 'Название модуля', 'module_presc' => 'Описание модуля', 'module_order'=>'#'],
                     'link' => '/admin/modules/',
                     'link_item_key' => 'module_id',
                     ])
@@ -46,3 +46,38 @@
         </div>
     </main>
 @endsection
+
+@push('javascript')
+    <script>
+        appjs.addEventListener('load', function(e) {
+            $("tbody").sortable({
+                items: "> tr",
+                appendTo: "parent",
+                helper: "clone",
+                update: function(event, ui) {
+                    var order = [];
+                    $(this).find('tr').each(function(i, el) {
+                        order.push({
+                            "module_id": $(el).data('id')
+                        });
+                    });
+                    console.log(order);
+                    $.post(
+                        '{{ route('admin.courses.setModuleOrder') }}', {
+                            '_token': '{{ csrf_token() }}',
+                            'course_id': {{ $course->course_id }},
+                            'order': order
+                        },
+                        function(response) {
+                            console.log(response);
+                        }
+                    ).
+                    fail(function(response) {
+                        console.log('fail');
+                    })
+                }
+            });
+        }, false);
+
+    </script>
+@endpush

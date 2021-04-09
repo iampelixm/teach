@@ -16,7 +16,7 @@ class Course extends Model
 
     public function modules()
     {
-        return $this->hasMany(CourseModule::class, 'course_id', 'course_id');
+        return $this->hasMany(CourseModule::class, 'course_id', 'course_id')->orderBy('module_order');
     }
 
     public function availableModules()
@@ -27,10 +27,15 @@ class Course extends Model
             //TODO - разберись уже с этими блядскими отношениями
             return $this->hasMany(CourseModule::class, 'course_id', 'course_id')
                 ->whereIn('module_id', CourseModuleUser::select(['module_id'])->where('user_id', $user->id))
-                ->orderBy('module_id');
+                ->orderBy('module_order');
         } else {
-            return $this->hasMany(CourseModule::class, 'course_id');
+            return $this->hasMany(CourseModule::class, 'course_id')->orderBy('module_order');
         }
+    }
+
+    public function lessons()
+    {
+        return $this->hasManyThrough(ModuleLesson::class, CourseModule::class, 'course_modules.course_id', 'module_lessons.module_id', 'course_id', 'module_id');
     }
 
     public function users()

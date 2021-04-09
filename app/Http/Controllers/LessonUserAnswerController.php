@@ -21,7 +21,8 @@ class LessonUserAnswerController extends Controller
 
         $valid = $request->validate(
             [
-                'lesson_id' => 'required'
+                'lesson_id' => 'required',
+                'answer_text'=>'required'
             ]
         );
         if (!$valid) return back()->withInput();
@@ -49,10 +50,7 @@ class LessonUserAnswerController extends Controller
         ]);
 
         if (!$lesson->lesson_quiz) {
-            $proccess = UserLessonProccess::where(['lesson_id' => $lesson->lesson_id, 'user_id' => Auth::user()->id])->first();
-            if (!$proccess) {
-                $proccess = UserLessonProccess::create(['lesson_id' => $lesson->lesson_id, 'user_id' => Auth::user()->id, 'lesson_status' => 'done']);
-            }
+            $proccess = UserLessonProccess::firstOrCreate(['user_id' => Auth::user()->id, 'lesson_id' => $lesson->lesson_id]);
             if ($proccess->lesson_status != 'done') {
                 $proccess->lesson_status = 'done';
                 $proccess->save();

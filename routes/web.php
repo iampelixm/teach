@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\API\BOT\TelegramController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseModuleController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\TelegramBotCommandController;
 use App\Http\Controllers\TelegramBotCommandActionController;
 use App\Http\Controllers\VideoController;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use App\Models\TelegramBot;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,47 +40,45 @@ Auth::routes();
 
 Route::get('/tech/buildPermissions', [AdminController::class, 'makeDefaultPermissions']);
 
-Route::get('/bot/me', function () {
-    // echo '/' . config()->telegram;
-    //dd(config('telegram')['bots'][config('telegram')['default']]['token']);
-    $me = Telegram::getMe();
-    dd($me);
-});
-
-Route::get('/bot/registerWebhook', function () {
-    $params = [
-        'url' => route('api.bot.webhook', config('telegram')['bots'][config('telegram')['default']]['token'])
-    ];
-    $me = Telegram::setWebhook($params);
-    dd($me);
-});
+// Route::get('/api/telegram/registerwebhook/{$bot}', [TelegramController::class, 'registerWebhook'])
+//     ->name('admin.telegram_bot.setWebhook');
+// Route::get('/bot/{$bot}/me', function () {
+//     // echo '/' . config()->telegram;
+//     //dd(config('telegram')['bots'][config('telegram')['default']]['token']);
+//     $me = Telegram::getMe();
+//     dd($me);
+// });
 
 
 Route::prefix('/admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'pageListCourses'])
         ->name('home');
 
-    Route::get('/study', [AdminController::class, 'pageStudyProcess'])->name('studyprocess');
+    Route::get('/study/activity', [AdminController::class, 'pageStudyProcessActivity'])->name('studyprocess.activity');
+    Route::get('/study/bystudent', [AdminController::class, 'pageStudyProcessByStudent'])->name('studyprocess.bystudent');
+    Route::get('/study/progress', [AdminController::class, 'pageStudyProcessProgress'])->name('studyprocess.progress');
 
-    Route::name('user.')->group(function () {
-        Route::get('/user', [AdminController::class, 'pageUserList'])
+    Route::name('user.')->prefix('/user')->group(function () {
+        Route::get('/', [AdminController::class, 'pageUserList'])
             ->name('list');
-        Route::get('/user/new', [AdminController::class, 'pageAddUser'])
+        Route::get('/new', [AdminController::class, 'pageAddUser'])
             ->name('new');
-        Route::post('/user/updateLessonAccess', [UserAccessController::class, 'updateLessonAccess'])
+        Route::post('/updateLessonAccess', [UserAccessController::class, 'updateLessonAccess'])
             ->name('updatelessonaccess');
-        Route::post('/user/addLessonAccess', [UserAccessController::class, 'addLessonAccess'])
+        Route::post('/addLessonAccess', [UserAccessController::class, 'addLessonAccess'])
             ->name('addlessonaccess');
-        Route::post('/user/add', [UserAccessController::class, 'addUser'])
+        Route::post('/add', [UserAccessController::class, 'addUser'])
             ->name('add');
-        Route::post('/user/update', [UserAccessController::class, 'updateUser'])
+        Route::post('/update', [UserAccessController::class, 'updateUser'])
             ->name('update');
-        Route::post('/user/disable', [UserAccessController::class, 'updateUser'])
+        Route::post('/disable', [UserAccessController::class, 'updateUser'])
             ->name('disable');
-        Route::post('/user/delete', [UserAccessController::class, 'deleteUser'])
+        Route::post('/delete', [UserAccessController::class, 'deleteUser'])
             ->name('delete');
-        Route::get('/user/{user_id}', [AdminController::class, 'pageUser'])
+        Route::get('/{user_id}', [AdminController::class, 'pageUser'])
             ->name('userpage');
+        Route::get('/{user}/current_lessons', [AdminController::class, 'pageUserCurrentLessons'])
+            ->name('current_lessons');
     });
 
     Route::get('/courses', [AdminController::class, 'pageListCourses']);
@@ -88,6 +88,9 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     Route::post('/courses/add', [CourseController::class, 'addCourse']);
     Route::post('/courses/update', [CourseController::class, 'updateCourse']);
     Route::post('/courses/delete', [CourseController::class, 'deleteCourse']);
+
+    Route::post('/courses/setModuleOrder', [CourseController::class, 'setModuleOrder'])
+        ->name('courses.setModuleOrder');
 
     Route::name('modules.')->group(function () {
         Route::get('/modules/{module_id}', [AdminController::class, 'pageModule'])
@@ -102,8 +105,7 @@ Route::prefix('/admin')->name('admin.')->group(function () {
             ->name('setLessonOrder');
     });
 
-    Route::name('lesson.')->prefix('/lessons')->group(function()
-    {
+    Route::name('lesson.')->prefix('/lessons')->group(function () {
         Route::get('/deletefile', [ModuleLessonController::class, 'deleteFile']);
         Route::get('/{lesson_id}', [AdminController::class, 'pageLesson'])->name('edit');
         Route::post('/{lesson_id}/ckeditor-image', [ModuleLessonController::class, 'ckeditorUpload'])->name('ckeditor-image');
@@ -119,6 +121,8 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     Route::post('/video/trim', [VideoController::class, 'trim'])->name('video.trim');
 
     Route::resource('/telegram_bot', TelegramBotController::class); //->name('index', 'telegram_bot');
+    Route::get('/telegram_bot/{bot}/registerwebhook', [TelegramBotController::class, 'registerWebhook'])
+        ->name('telegram_bot.register_webhook');
     Route::resource('/telegram_bot.conversation_chain', TelegramBotConversationChainController::class);
     Route::resource('/telegram_bot.conversation_chain.chain_item', TelegramBotConversationChainItemController::class);
     Route::resource('/telegram_bot.command', TelegramBotCommandController::class);
@@ -145,7 +149,7 @@ Route::prefix('/')->name('web.')->group(
         Route::post('/userlessonanswer', [LessonUserAnswerController::class, 'saveUserAnswer']);
         Route::post('/userlessonquiz', [LessonUserAnswerController::class, 'saveUserQuiz']);
 
-        Route::get('/quizresult/{lesson_id}', [WebController::class, 'pageQuizResult'])->name('quizresult');
+        Route::get('/quizresult/{lesson_id}/{user_id?}', [WebController::class, 'pageQuizResult'])->name('quizresult');
         Route::get('/lessonquiz/{lesson_id}', [WebController::class, 'pageLessonQuiz'])->name('lessonQuiz');
 
         Route::get('/file/get', [FilesController::class, 'getFile']);

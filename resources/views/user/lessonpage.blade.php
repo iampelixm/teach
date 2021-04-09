@@ -71,7 +71,6 @@
         let params={};
         params.video_id=url;
         var r=youtube_embed_template(params);
-        console.log(r);
         $(r).insertAfter($(el).parent());
     });
 @endpush

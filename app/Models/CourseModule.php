@@ -24,9 +24,10 @@ class CourseModule extends Model
         return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')->orderBy('lesson_order');
     }
 
-    public function availableLessons()
+    public function availableLessons($user = '')
     {
-        $user = Auth::user();
+        if (!$user)
+            $user = Auth::user();
 
         if ($this->course->is_access_listed) {
             //TODO - разберись уже с этими блядскими отношениями
@@ -38,9 +39,10 @@ class CourseModule extends Model
         }
     }
 
-    public function doneLessons()
+    public function doneAvailableLessons($user = '')
     {
-        $user = Auth::user();
+        if (!$user)
+            $user = Auth::user();
 
         if ($this->course->is_access_listed) {
 
@@ -54,19 +56,54 @@ class CourseModule extends Model
         }
     }
 
-    public function notDoneLessons()
+    public function notDoneAvailableLessons($user = '')
     {
-        $user = Auth::user();
+        if (!$user)
+            $user = Auth::user();
 
         if ($this->course->is_access_listed) {
 
             return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
-                ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id))
+            ->whereIn('lesson_id', LessonUser::select(['lesson_id'])->where('user_id', $user->id))
                 ->whereNotIn('lesson_id', UserLessonProccess::select(['lesson_id'])
-                    ->where(['user_id' => $user->id, 'lesson_id' => $this->lesson_id, 'lesson_status' => 'done']))
+                ->where(['user_id' => $user->id, 'lesson_id' => $this->lesson_id, 'lesson_status' => 'done']))
+                ->orderBy('lesson_order');
+        } else {
+            return $this->hasMany(ModuleLesson::class, 'module_id')->orderBy('lesson_order');
+        }
+    }    
+
+    public function doneLessons($user = '')
+    {
+        if (!$user)
+            $user = Auth::user();
+
+        if ($this->course->is_access_listed) {
+
+            return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
+                ->whereIn('lesson_id', UserLessonProccess::select(['lesson_id'])
+                ->where(['user_id' => $user->id, 'lesson_id' => $this->lesson_id, 'lesson_status' => 'done']))
                 ->orderBy('lesson_order');
         } else {
             return $this->hasMany(ModuleLesson::class, 'module_id')->orderBy('lesson_order');
         }
     }
+
+    public function notDoneLessons($user = '')
+    {
+        if (!$user)
+            $user = Auth::user();
+
+        if ($this->course->is_access_listed) {
+
+            return $this->hasMany(ModuleLesson::class, 'module_id', 'module_id')
+                ->whereNotIn('lesson_id', UserLessonProccess::select(['lesson_id'])
+                ->where(['user_id' => $user->id, 'lesson_id' => $this->lesson_id, 'lesson_status' => 'done']))
+                ->orderBy('lesson_order');
+        } else {
+            return $this->hasMany(ModuleLesson::class, 'module_id')->orderBy('lesson_order');
+        }
+    }
+
+
 }

@@ -5,6 +5,10 @@ if (!isset($quiz)) {
 if (!isset($lesson_id)) {
     return 'Не указан урок';
 }
+
+if (!isset($user_id)) {
+    $user_id = Auth::user()->id;
+}
 $quiz = json_decode($quiz);
 
 @endphp
@@ -23,6 +27,6 @@ $quiz = json_decode($quiz);
         </div>
     @endforeach
     <div class="text-center">
-        <a class="btn btn-success mt-4" href="{{ route('web.quizresult', $lesson_id) }}">Результ сдачи</a>
+        <a class="btn btn-success mt-4" href="{{ route('web.quizresult', [$lesson_id, $user_id]) }}">Результ сдачи</a>
     </div>
 </div>

@@ -47,6 +47,7 @@
             @endif
 
             <h2 class="title text-center">Команды бота</h2>
+            <a class="btn btn-success mb-4" href="{{route('admin.telegram_bot.command.create', $bot)}}">Создать</a>
             @if (!collect($bot->commands)->isEmpty())
                 @component('component.table', [
                     'items' => $bot->commands,
@@ -58,7 +59,7 @@
                 @endcomponent
             @else
                 @component('component.alert', ['type' => 'warning'])
-                    обращений не было
+                    нет комманд
                 @endcomponent
             @endif
     </main>

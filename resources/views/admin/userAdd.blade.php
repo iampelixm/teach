@@ -13,6 +13,7 @@
                         <x-form-input name="name" label="{{ __('Name') }}" />
                         <x-form-input name="email" label="{{ __('Email') }}" />
                         <x-form-input name="password" label="{{ __('Password') }}" />
+			<x-form-input name="telegram_id" type="hidden" value="" />
                         <h3>Роли</h3>
                         <x-form-group>
                             @foreach (Silber\Bouncer\Database\Role::all() as $role)

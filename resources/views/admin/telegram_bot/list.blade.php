@@ -5,6 +5,7 @@
             <h1 class="title text-center">
                 Список телеграм ботов
             </h1>
+            <a class="btn btn-success" href="{{ route('admin.telegram_bot.create') }}">Создать</a>
             @if (!collect($bots)->isEmpty())
                 @component('component.table', [
                     'items' => $bots,
@@ -17,7 +18,6 @@
             @else
                 @component('component.alert', ['type' => 'warning'])
                     Ботов еще нет.
-                    <a class="btn btn-success" href="{{ route('admin.telegram_bot.create') }}">Создать</a>
                 @endcomponent
             @endif
         </div>

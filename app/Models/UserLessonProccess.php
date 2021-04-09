@@ -9,5 +9,14 @@ class UserLessonProccess extends Model
 {
     use HasFactory;
     public $fillable = ['user_id', 'lesson_id'];
-    protected $primaryKey = null;
+
+    public function lesson()
+    {
+        return $this->belongsTo(ModuleLesson::class, 'lesson_id', 'lesson_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

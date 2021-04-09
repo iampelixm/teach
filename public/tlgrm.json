@@ -1,7 +1,12 @@
 {
-    "update_id": 54070664,
-    "message": {
-        "message_id": 131,
+    "update_id": 191595268,
+    "my_chat_member": {
+        "chat": {
+            "id": 276054493,
+            "first_name": "Александр Семенов",
+            "username": "pelixm",
+            "type": "private"
+        },
         "from": {
             "id": 276054493,
             "is_bot": false,
@@ -9,13 +14,25 @@
             "username": "pelixm",
             "language_code": "ru"
         },
-        "chat": {
-            "id": 276054493,
-            "first_name": "Александр Семенов",
-            "username": "pelixm",
-            "type": "private"
+        "date": 1616459138,
+        "old_chat_member": {
+            "user": {
+                "id": 1739389365,
+                "is_bot": true,
+                "first_name": "SevenRealty Welcome!",
+                "username": "SevenRealty_welcome_bot"
+            },
+            "status": "kicked",
+            "until_date": 0
         },
-        "date": 1615709378,
-        "text": "sec but"
+        "new_chat_member": {
+            "user": {
+                "id": 1739389365,
+                "is_bot": true,
+                "first_name": "SevenRealty Welcome!",
+                "username": "SevenRealty_welcome_bot"
+            },
+            "status": "member"
+        }
     }
 }

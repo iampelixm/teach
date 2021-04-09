@@ -128,4 +128,25 @@ class TelegramBotController extends Controller
         $telegramBot->remove();
         return redirect(route('admin.telegram_bot.list'));
     }
+
+    public function registerWebhook(TelegramBot $bot)
+    {
+        $params = [
+            'url' => route('api.bot.webhook', $bot->key)
+        ];
+        $botApi = new \Telegram\Bot\Api(
+            $bot->key,
+            false,
+            null
+        );
+        $result = $botApi->setWebhook($params);
+        if ($result) {
+            return redirect(route('admin.telegram_bot.show', $bot));
+        }
+        else
+        {
+            dd($result);
+        }
+        // \\$me = Telegram::setWebhook($params);        
+    }
 }

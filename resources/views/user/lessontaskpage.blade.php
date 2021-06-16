@@ -36,7 +36,8 @@
                         value="{{ collect($user_answer)->isEmpty() ? Auth::user()->id : $user_answer->user_id }}"
                         type="hidden" name="user_id" />
                     <x-form-input value="{{ $modulelesson->lesson_id }}" type="hidden" name="lesson_id" />
-                    <x-form-textarea :bind="$user_answer" class="ckeditor" id="editor" name="answer_text" label="Ответ на задание" />
+                    <x-form-textarea :bind="$user_answer" class="ckeditor" id="editor" name="answer_text"
+                        label="Ответ на задание" />
                     <x-form-input type="file" name="file" label="Прикрепить файлы" multiple />
                     <x-form-submit>Сохранить</x-form-submit>
                 </x-form>
@@ -58,6 +59,9 @@
                     aria-expanded="false" aria-controls="answerform">Изменить ответ</button>
             @endif
             @if ($modulelesson->lesson_quiz)
+                <a class="btn btn-info" href="/lessonquiz/{{ $modulelesson->lesson_id }}">Перейти к тесту</a>
+            @endif
+            @if ($modulelesson->lesson_quiz)
                 @if (!$modulelesson->userAnswer || !$modulelesson->userAnswer->answer_quiz)
                     <a class="btn btn-success"
                         href="{{ route('web.lessonQuiz', ['lesson_id' => $modulelesson->lesson_id]) }}">Завершить
@@ -68,9 +72,11 @@
                         урок</a>
                 @endif
             @else
-                <a class="btn btn-success"
-                    href="{{ route('web.lesson.done', ['lesson_id' => $modulelesson->lesson_id]) }}">Завершить
-                    урок</a>
+                @if ($modulelesson->userAnswer && $modulelesson->userAnswer->answer_text)
+                    <a class="btn btn-success"
+                        href="{{ route('web.lesson.done', ['lesson_id' => $modulelesson->lesson_id]) }}">Завершить
+                        урок</a>
+                @endif
             @endif
         </div>
     </main>

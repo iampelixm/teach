@@ -57,6 +57,7 @@ Route::prefix('/admin')->name('admin.')->group(function () {
     Route::get('/study/activity', [AdminController::class, 'pageStudyProcessActivity'])->name('studyprocess.activity');
     Route::get('/study/bystudent', [AdminController::class, 'pageStudyProcessByStudent'])->name('studyprocess.bystudent');
     Route::get('/study/progress', [AdminController::class, 'pageStudyProcessProgress'])->name('studyprocess.progress');
+    Route::get('/study/progress/{student}', [AdminController::class, 'pageStudyProcessStudentProgress'])->name('studyprocess.studentprogress');
 
     Route::name('user.')->prefix('/user')->group(function () {
         Route::get('/', [AdminController::class, 'pageUserList'])
@@ -138,12 +139,11 @@ Route::prefix('/')->name('web.')->group(
         Route::get('/course/{course_id}', [WebController::class, 'pageCourse']);
 
         Route::name('module.')->group(function () {
-            Route::get('/module/{module_id}', [WebController::class, 'pageModule']);
+            Route::get('/module/{module_id}', [WebController::class, 'pageModule'])->name('page');
             Route::get('/module/{module_id}/end', [WebController::class, 'pageModuleEnd'])->name('endPage');
         });
         Route::get('/lesson/{lesson_id}/done', [WebController::class, 'checkDoneLesson'])->name('lesson.done');
         Route::get('/lesson/{lesson_id}', [WebController::class, 'pageLesson'])->name('lessonPage');
-
 
         Route::get('/lessontask/{lesson_id}', [WebController::class, 'pageLessonTask'])->name('lessonTask');
         Route::post('/userlessonanswer', [LessonUserAnswerController::class, 'saveUserAnswer']);

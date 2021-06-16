@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\CourseModule;
+use App\Models\CourseModuleUser;
 use App\Models\LessonUserAnswer;
 use App\Models\ModuleLesson;
 use App\Models\UserLessonProccess;
@@ -54,7 +55,7 @@ class WebController extends Controller
         $user = Auth::user();
         if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
         $template_data = $this->getTemplateData();
-        $template_data['courses'] = collect($user->courses);//->concat(Course::where(['is_access_listed' => 0])->get());
+        $template_data['courses'] = collect($user->courses->concat(Course::where(['is_access_listed' => 0])->get()));
         return view('user.courses', $template_data);
     }
 
@@ -64,11 +65,16 @@ class WebController extends Controller
         if (!BouncerFacade::create($user)->can('viewCourses')) abort(403, 'Нет разрешения на курсы');
         $course = Course::find($course_id);
         //Проверим есть ли такой курс среди разрешенных пользователю для курса с ограничением доступа по списку
+        /*
         if ($course->is_access_listed) {
             if ($user->courses()->where(['courses.course_id' => $course_id])->get()->isEmpty()) {
                 abort(403, 'Нет разрешения курс ' . $course->course_caption);
             }
         }
+        */
+        //Теперь так:
+        if (!$user->hasCourseAccess($course))
+            abort(403, 'Нет разрешения курс ' . $course->course_caption);
         $template_data = $this->getTemplateData();
         $a = $course->avaliableModules;
         $template_data['course'] = $course;
@@ -96,9 +102,14 @@ class WebController extends Controller
         return view('user.modulepage', $template_data);
     }
 
-    public function pageModuleEnd(Request $request, $module_id)
+    public function pageModuleEnd(Request $request, CourseModule $module_id)
     {
         $template_data = $this->getTemplateData();
+
+        $next_module = $module_id->course->modules->where('module_order', '>', $module_id->module_order)->first();
+        CourseModuleUser::firstOrCreate(['module_id' => $next_module->module_id, 'user_id' => Auth::user()->id]);
+        LessonUser::firstOrCreate(['lesson_id' => $next_module->lessons->first()->lesson_id, 'user_id' => Auth::user()->id]);        
+        $template_data['module'] = $module_id;
         return view('user.moduleendpage', $template_data);
     }
 
@@ -109,17 +120,42 @@ class WebController extends Controller
 
         $lesson = ModuleLesson::find($lesson_id);
         if (!$lesson) abort('404', 'Такой урок не найден(((');
+
+        //Проверим статус урока и его выполнение, если есть. Статус урока мог быть изменен извне
+        //Если еще нет записи в таблице прохождения уроков - создадим ее со статусом opened (задается по умолчанию)
+        if ($user->isA('student')) {
+            $lessonProcess = UserLessonProccess::firstOrCreate(['user_id' => $user->id, 'lesson_id' => $lesson_id]);
+            //$lessonProcess->save();
+
+            if ($lesson->status->lesson_status == 'done') {
+                if ($lesson->lesson_task) {
+                    if (!$lesson->userAnswer || !$lesson->userAnswer->answer_text || $lesson->userAnswer->answer_text == '') {
+                        $lesson->status->lesson_status = 'seen';
+                        $lesson->status->save();
+                    }
+                }
+
+                if ($lesson->lesson_quiz) {
+                    if (!$lesson->userAnswer || !$lesson->userAnswer->answer_quiz || $lesson->userAnswer->answer_quiz == '') {
+                        $lesson->status->lesson_status = 'seen';
+                        $lesson->status->save();
+                    } else {
+                        $modulelessoncontroller = new ModuleLessonController;
+                        if (!$modulelessoncontroller->checkQuiz($lesson_id)) {
+                            $lesson->status->lesson_status = 'seen';
+                            $lesson->status->save();
+                        }
+                    }
+                }
+            }
+        }
         $template_data = $this->getTemplateData();
         $template_data['modulelesson'] = $lesson;
         $template_data['videos'] = Storage::allFiles('lessons/' . $lesson_id . '/video');
         $template_data['documents'] = Storage::allFiles('lessons/' . $lesson_id . '/document');
         $template_data['all_files'] = Storage::allFiles('lessons/' . $lesson_id);
-        $template_data['next_lesson'] = $lesson->module->availableLessons->where('lesson_order', '>', $lesson->lesson_order)->first();
-        //Если еще нет записи в таблице прохождения уроков - создадим ее со статусом opened (задается по умолчанию)
-        if ($user->isA('student')) {
-            $lessonProcess = UserLessonProccess::firstOrCreate(['user_id' => $user->id, 'lesson_id' => $lesson_id]);
-            //$lessonProcess->save();
-        }
+        $template_data['next_lesson'] = $lesson->module->lessons->where('lesson_order', '>', $lesson->lesson_order)->first();
+
         return view('user.lessonpage', $template_data);
     }
 
@@ -136,7 +172,7 @@ class WebController extends Controller
             }
             if (!$lesson_answer->answer_text) {
                 return redirect(route('web.lessonTask', ['lesson_id' => $lesson_id]))
-                ->withErrors(['В ответе на задание должен быть хоть какой-то текст']);
+                    ->withErrors(['В ответе на задание должен быть хоть какой-то текст']);
             }
         }
         $modulelessoncontroller = new ModuleLessonController;
@@ -149,18 +185,29 @@ class WebController extends Controller
 
         //Дадим доступ к следующему уроку в этом модуле
         $next_lesson = $lesson->module->lessons->where('lesson_order', '>', $lesson->lesson_order)->first();
-
-        //Если это последний урок - отправим пользователя на информационную страницу об окончании модуля
-        if (!$next_lesson) return redirect(route('web.module.endPage', ['module_id' => $lesson->module->module_id]));
-
         //Если не последнее занятие - дадим доступ в следующему занятию и отправим на страницу занятия
         if (!$next_lesson->userHasAccess) {
             LessonUser::firstOrCreate(['lesson_id' => $next_lesson->lesson_id, 'user_id' => Auth::user()->id]);
             Log::create([
                 'log_message' => 'Открыт доступ к следующему уроку ' . $next_lesson->lesson_caption . '(' . $next_lesson->lesson_id . ') для ученика' .
-                    Auth::user()->name . ' (' . Auth::user()->id . ')'
+                Auth::user()->name . ' (' . Auth::user()->id . ')'
             ]);
+        }        
+
+        // //Если это последний урок - отправим пользователя на информационную страницу об окончании модуля
+        // if (!$next_lesson) {
+        //     return redirect(route('web.module.endPage', ['module_id' => $lesson->module->module_id]));
+        // }
+
+        //Если после выполнения задания у нас оказался полностью выполнен модулю - отправляем на страницу статистики и открываем доступ 
+        if ($lesson->module->isDone()) {
+            $next_module = $lesson->module->course->modules->where('module_order', '>', $lesson->module->module_order)->first();
+            CourseModuleUser::firstOrCreate(['module_id' => $next_module->module_id, 'user_id' => Auth::user()->id]);
+            LessonUser::firstOrCreate(['lesson_id' => $next_module->lessons->first()->lesson_id, 'user_id' => Auth::user()->id]);
+            return redirect(route('web.module.endPage', ['module_id' => $lesson->module->module_id]));
         }
+
+
         return redirect(route('web.lessonPage', ['lesson_id' => $next_lesson->lesson_id]));
     }
 
@@ -190,19 +237,19 @@ class WebController extends Controller
         return view('user.lessonquizpage', $template_data);
     }
 
-    public function quizResult($lesson_id, $user_id='')
+    public function quizResult($lesson_id, $user_id = '')
     {
-        if(!$user_id) $user_id=Auth::user()->id;
+        if (!$user_id) $user_id = Auth::user()->id;
         $lesson = ModuleLesson::find($lesson_id);
-        $answer=LessonUserAnswer::where(['lesson_id'=>$lesson_id,'user_id'=>$user_id])->first();
-        if(!$answer) return abort(404);
+        $answer = LessonUserAnswer::where(['lesson_id' => $lesson_id, 'user_id' => $user_id])->first();
+        if (!$answer) return abort(404);
         $quiz = json_decode($lesson->lesson_quiz);
         $quiz_answer = json_decode($answer->answer_quiz);
         $out_data = [];
         foreach ($quiz as $question_i => $question) {
-            $question_data= [];
+            $question_data = [];
             $question_data['question'] = $question;
-            if(!isset($quiz_answer[$question_i])) return abort(403,'Результат не соответствует квизу');
+            if (!isset($quiz_answer[$question_i])) return abort(403, 'Результат не соответствует квизу');
             $question_data['answer'] = $quiz_answer[$question_i];
             //$quiz_answer = $quiz_answer[$question_i];
             if (in_array('yes', $question->answer_correct)) {
@@ -220,16 +267,16 @@ class WebController extends Controller
             }
             $out_data[] = $question_data;
         }
-        return $out_data;        
+        return $out_data;
     }
 
-    public function pageQuizResult($lesson_id, $user_id='')
+    public function pageQuizResult($lesson_id, $user_id = '')
     {
-        if(!$user_id) $user_id=Auth::user()->id;
-        $quiz_result=$this->quizResult($lesson_id, $user_id);
+        if (!$user_id) $user_id = Auth::user()->id;
+        $quiz_result = $this->quizResult($lesson_id, $user_id);
         $template_data = $this->getTemplateData();
-        $template_data['quiz_result']= $quiz_result;
-        $template_data['modulelesson']=ModuleLesson::find($lesson_id);
+        $template_data['quiz_result'] = $quiz_result;
+        $template_data['modulelesson'] = ModuleLesson::find($lesson_id);
         return view('user.quizresultpage', $template_data);
     }
 

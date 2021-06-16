@@ -89,8 +89,8 @@ class AdminController extends Controller
                         ],
                         [
                             'link' => route('admin.studyprocess.progress'),
-                            'caption' => 'По ученикам',
-                            'title' => 'По ученикам',
+                            'caption' => 'Прогресс учеников',
+                            'title' => 'Прогресс учеников',
                         ]
                     ]
                 ]
@@ -226,6 +226,14 @@ class AdminController extends Controller
         // $template_data['lesson_process'] = $lesson_process;
         return view('admin.studyprocess.progress', $template_data);
     }
+
+    public function pageStudyProcessStudentProgress(Request $request, User $student)
+    {
+        $template_data = $this->getTemplateData();
+        $template_data['student'] = $student;
+        // $template_data['lesson_process'] = $lesson_process;
+        return view('admin.studyprocess.studentprogress', $template_data);
+    }    
 
     public function pageNewCourse()
     {

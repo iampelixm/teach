@@ -17,12 +17,13 @@
                             @endcomponent
                         </div>
                     @endforeach
+            
+                @else
+                    <div class="alert">
+                        У вас пока нет доступных курсов обучения.
+                    </div>
+                    @endif
             </div>
-        @else
-            <div class="alert">
-                У вас пока нет доступных курсов обучения.
-            </div>
-            @endif
             {{-- @component('component.table', [
     'items' => $courses,
     'captions' => ['course_caption' => 'Название курса', 'course_presc' => 'Описание курса'],

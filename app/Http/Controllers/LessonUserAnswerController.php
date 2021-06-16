@@ -31,15 +31,7 @@ class LessonUserAnswerController extends Controller
 
         if (!$lesson) abort(404);
 
-        //UPDATE RECORD
-        if ($request->input('answer_id')) {
-            $userAnswer = LessonUserAnswer::find($request->input('answer_id'));
-        } else {
-            $userAnswer = new LessonUserAnswer;
-            $userAnswer->user_id = Auth::user()->id;
-            $userAnswer->lesson_id = $request->input('lesson_id');
-            $userAnswer->answer_quiz = '[]';
-        }
+        $userAnswer = LessonUserAnswer::firstOrCreate(['lesson_id' => $lesson->lesson_id, 'user_id' => Auth::user()->id]);
         $userAnswer->answer_text = $request->input('answer_text');
         $userAnswer->save();
 
@@ -59,7 +51,7 @@ class LessonUserAnswerController extends Controller
                         Auth::user()->name . ' (' . Auth::user()->id . ')'
                 ]);
             }
-            $next_lesson = $lesson->module->availableLessons->where('lesson_order', '>', $lesson->lesson_order)->first();
+            $next_lesson = $lesson->module->lessons->where('lesson_order', '>', $lesson->lesson_order)->first();
             if ($next_lesson) {
                 if (!$next_lesson->userHasAccess) {
                     LessonUser::firstOrCreate(['lesson_id' => $next_lesson->lesson_id, 'user_id' => Auth::user()->id]);
@@ -84,17 +76,7 @@ class LessonUserAnswerController extends Controller
         );
         if (!$valid) return 'Не указан урок';
         $lesson_id = $request->input('lesson_id');
-        $lessonUserAnswer = LessonUserAnswer::where(['lesson_id' => $lesson_id, 'user_id' => Auth::user()->id])->first();
-        if (!$lessonUserAnswer) {
-            $lessonUserAnswer = LessonUserAnswer::create(
-                [
-                    'lesson_id' => $lesson_id,
-                    'user_id' => Auth::user()->id,
-                    'answer_text' => '',
-                    'answer_quiz' => '[]'
-                ]
-            );
-        }
+        $lessonUserAnswer = LessonUserAnswer::firstOrCreate(['lesson_id' => $lesson_id, 'user_id' => Auth::user()->id]);
 
         $lessonUserAnswer->answer_quiz = json_encode($request->input('answers'), JSON_UNESCAPED_UNICODE);
         $lessonUserAnswer->save();
@@ -105,7 +87,6 @@ class LessonUserAnswerController extends Controller
                 . ' на квиз урока ' . $lessonUserAnswer->lesson_id
         ]);
 
-        $modulelessoncontroller = new ModuleLessonController;
         return view('component.quiz_answer', ['quiz'=>$lessonUserAnswer->answer_quiz, 'lesson_id'=>$lesson_id]);
     }
 }

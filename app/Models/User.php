@@ -52,10 +52,19 @@ protected $attributes=[
         return $this->hasManyThrough(Course::class, CourseUser::class, 'user_id', 'course_id', 'id', 'course_id');
     }
 
-    public function hasCourseAccess($course_id)
+    public function hasCourseAccess(Course $course)
     {
-        return $this->hasManyThrough(Course::class, CourseUser::class, 'user_id', 'course_id', 'id', 'course_id')
-            ->where(['courses.course_id' => $course_id]);
+        //$course=Course::find($course);
+        if($course->is_access_listed)
+        {
+            $has_access=$this->hasManyThrough(Course::class, CourseUser::class, 'user_id', 'course_id', 'id', 'course_id')
+            ->where(['courses.course_id' => $course->course_id])->get();
+            return !$has_access->isEmpty();
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public function modules()
@@ -77,5 +86,10 @@ protected $attributes=[
     public function hasLessonAccess($lesson_id = 0)
     {
         return $this->hasOne(LessonUser::class, 'user_id', 'id')->where(['lesson_id' => $lesson_id]);
+    }
+
+    public function moduleLessonsStatus(CourseModule $module)
+    {
+        return $this->hasMany(UserLessonProccess::class, 'user_id', 'id')->whereIn('lesson_id', $module->lessons->pluck('lesson_id'));
     }
 }
